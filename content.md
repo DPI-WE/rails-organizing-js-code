@@ -1,5 +1,5 @@
 # JavaScript level up with Stimulus.js
-In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Now, let's dive deeper into organizing our JavaScript code, `javascript_include_tag`, lifecycle methods, and investigate 3 different approaches to managing JavaScript in a Rails app. Finally, we'll implement a practical example by adding interactive features to a Ruby on Rails application using two approaches: Vanilla JavaScript and Stimulus.js.
+In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Building on this foundation, we're now set to delve deeper into the organization of JavaScript code, the role of `javascript_include_tag`, various lifecycle methods, and three distinct approaches to managing JavaScript in a Rails environment. To bring these concepts to life, we'll implement a practical example, implementing interactive features in a Ruby on Rails application using both Vanilla JavaScript and Stimulus.js.
 
 ## Understanding JavaScript Organization in Rails
 Typically, JavaScript files in Rails are placed under `app/javascript`. As your application grows, keeping your javascript code in this directory with a clear structure keeps your codebase manageable. Clear organization also helps team members (and instructors 🥹) to understand and contribute to the codebase effectively.
@@ -82,7 +82,8 @@ In the rendered HTML of the deployed site, it translates to something like:
 This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
 
 <!-- TODO: add explanation of differences in event handling between `document`, `window`, and specific elements -->
-## Understanding Lifecycle Methods in JavaScript
+<!-- TODO: refactor -->
+<!-- ## Understanding Lifecycle Methods in JavaScript
 Lifecycle methods are crucial in understanding how your JavaScript interacts with the DOM.
 
 ### The `DOMContentLoaded` Event
@@ -107,7 +108,7 @@ window.addEventListener('load', (event) => {
 
 ### The `beforeunload` and `unload` Events
 - `beforeunload` can be used to alert the user before leaving a page.
-- `unload` triggers when the document or a child resource is being unloaded.
+- `unload` triggers when the document or a child resource is being unloaded. -->
 
 ## JavaScript Management in Rails: Bundling, Importmaps, and the Asset Pipeline
 Rails 7 offers several approaches for handling JavaScript, each catering to different needs: [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html). Understanding the differences and use cases of each helps in choosing the right tool for your project.
@@ -136,13 +137,12 @@ The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Ra
 Differences from Node.js `require`: Unlike Node.js `require`, which is part of CommonJS module syntax and used for server-side JavaScript, the Asset Pipeline's `//= require` directive is specific to Rails and is used for managing frontend assets.
 </aside>
 
-- **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: JavaScript files are placed in `app/assets/javascripts/`, and `//= require` statements are used in `application.js` to include them.
+- **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: JavaScript files are placed in `app/assets/javascripts/`, and `//= require` statements are used in `app/assets/javascripts/application.js` to include them.
 
 ### Choosing the Right Approach
-- Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires complex JavaScript functionalities, integration with frameworks like React or Vue, or handling numerous [NPM packages](https://www.npmjs.com/).
+- Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like  [React](https://react.dev/) or [Vue](https://vuejs.org/), or handling numerous [NPM packages](https://www.npmjs.com/).
 - Choose [Importmaps](https://github.com/rails/importmap-rails) for simpler projects that benefit from less configuration and direct browser handling of JavaScript modules.
 - Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) if your project aligns with the traditional Rails asset management approach, particularly for less complex JavaScript integrations.
-Conclusion
 
 Each method - [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) - offers distinct advantages and fits different scenarios in a Rails application. Your choice depends on the specifics of your JavaScript requirements, your preferred development workflow, and the specific needs of your project.
 
