@@ -1,5 +1,5 @@
 # JavaScript level up with Stimulus.js
-In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Now, let's dive deeper into organizing our JavaScript code, Rails JavaScript helper methods, understanding the lifecycle methods, and briefly touch on the JavaScript and CSS asset pipeline. Finally, we'll implement a practical example by adding interactive features to a Ruby on Rails application using two approaches: Vanilla JavaScript and Stimulus.js.
+In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Now, let's dive deeper into organizing our JavaScript code, `javascript_include_tag`, lifecycle methods, and briefly touch on the JavaScript and CSS asset pipeline. Finally, we'll implement a practical example by adding interactive features to a Ruby on Rails application using two approaches: Vanilla JavaScript and Stimulus.js.
 
 ## Understanding JavaScript Organization in Rails
 Typically, JavaScript files in Rails are placed under `app/javascript`. As your application grows, keeping your javascript code in this directory with a clear structure keeps your codebase manageable. Clear organization also helps team members (and instructors 🥹) to understand and contribute to the codebase effectively.
@@ -21,7 +21,7 @@ app/
 - **Custom**: Create custom directories like `custom/` or `util/` for your specific scripts.
 - **application.js**: The JavaScript manifest file. You can think of it as a central directory or index of your JavaScript files.
 
-## Importing ES6 Modules
+### Importing ES6 Modules
 ES6 modules allow you to break your JavaScript into smaller, reusable components.
 - Create separate modules in the `javascript/` directory.
 - Export functions, objects, or classes from these modules.
@@ -41,14 +41,45 @@ import { sayHello } from './custom/hello';
 console.log(sayHello('Alice'));
 ```
 
-## `javascript_include_tag`
-The `javascript_include_tag` is a Rails helper that includes JavaScript files into your HTML templates. Typically used in your layout file:
+## Understanding `javascript_include_tag` in Rails
+The `javascript_include_tag` is a built-in Rails helper used to include JavaScript files in your HTML templates. It generates a script tag to link JavaScript files to your HTML pages. This is an essential part of integrating JavaScript into your Rails views.
+
+### Basic Usage
+In your application layout file `app/views/layouts/application.html.erb`, you would typically use `javascript_include_tag` to include the main JavaScript file:
+
+```erb
+<%= javascript_include_tag 'application' %>
+```
+This line automatically includes the `app/javascript/application.js` file, which is usually the main JavaScript file in a Rails application. Rails will handle the processing of this file, which might involve bundling (more on this later).
+
+<aside>
+
+### `data-turbo-track` Attribute
+The `data-turbo-track` attribute is specifically related to [Turbo Drive](https://turbo.hotwired.dev/handbook/drive), a part of the [Hotwire toolkit](https://hotwired.dev/).
 
 ```erb
 <%= javascript_include_tag 'application', 'data-turbo-track': 'reload' %>
 ```
 
-This line includes `application.js`, which is your main JavaScript file. Rails handles the compilation and packaging of all the linked JavaScript files.
+### What Turbo Drive Does:
+- **Speeds Up Navigation**: Turbo Drive is designed to make navigation in a Rails application faster by partially updating the page's HTML without a full reload.
+- **Ajax-like Behavior**: It achieves this by intercepting clicks on links and form submissions, and instead of doing a full page load, it updates only the body and the head of the page.
+
+### The Role of `data-turbo-track`
+- **Cache Management**: The `data-turbo-track: 'reload'` attribute is used to tell Turbo Drive how to manage caching for scripts.
+- **Reload Behavior**: When set to reload, it ensures that if the JavaScript file changes, Turbo Drive will fully reload the page rather than using its caching mechanism. This is crucial for ensuring that users always receive the most up-to-date version of your JavaScript.
+
+### When Is This Important?
+This feature becomes particularly important in applications where JavaScript files change often, and you need to ensure that these changes are reflected immediately to the user without them having to clear their cache or force-reload the page.
+
+</aside>
+
+In the rendered HTML of the deployed site, it translates to something like:
+
+```html
+<script src="/assets/application-abcdef1234567890.js"></script>
+```
+This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
 
 ## Understanding Lifecycle Methods in JavaScript
 Lifecycle methods are crucial in understanding how your JavaScript interacts with the DOM.
@@ -63,6 +94,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 ```
 
+<aside>
+Use the `turbolinks:load` event instead of `DOMContentLoaded` if your application is using [Turbolinks](https://github.com/turbolinks/turbolinks).
+</aside>
+
 ### The `load` Event
 Triggered when the entire page, including all dependent resources (like images), is fully loaded.
 
@@ -76,65 +111,52 @@ window.addEventListener('load', (event) => {
 - `beforeunload` can be used to alert the user before leaving a page.
 - `unload` triggers when the document or a child resource is being unloaded.
 
-## Understanding Webpacker and Importmaps in Rails 7
-Rails 7 offers two different approaches for handling JavaScript: Webpacker and Importmaps. Both have distinct characteristics suitable for different project needs.
+## JavaScript Management in Rails: Bundling, Importmaps, and the Asset Pipeline
+Rails 7 offers several approaches for handling JavaScript, each catering to different needs: [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html). Understanding the differences and use cases of each helps in choosing the right tool for your project.
 
-### Webpacker
-Webpacker is a tool that integrates Webpack, a popular JavaScript bundler, into Rails. It allows for advanced JavaScript processing, including the use of ES6 modules, JSX for React, and integration with NPM packages. In essence, Webpacker prepares all JavaScript assets on the server side before they are sent to the client (browser).
+### [Bundling](https://github.com/rails/jsbundling-rails)
+[Bundling](https://github.com/rails/jsbundling-rails) refers to the process of compiling and packaging multiple JavaScript files into one or a few files. This approach is efficient and reduces the number of requests a browser makes to load a page.
 
-#### Key Points:
-- **Ideal for Complex Applications**: Best suited for applications that require complex JavaScript, such as Single Page Applications (SPAs).
-- **NPM Package Management**: Easily manage and include various NPM packages.
-- **Preprocessing Assets**: Supports asset preprocessing, including stylesheets and images.
-- **Configuration**: Offers more configuration options, allowing for customized setups.
-
-#### How to Tell If a Project Is Using Webpacker:
-- Check for `webpacker` in the `Gemfile`.
-- Look for `app/javascript/packs/application.js` or similar JavaScript pack files.
-- Presence of `config/webpacker.yml` file.
+- **Use Case**: Ideal for complex applications that utilize Single Page Application (SPA) JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or need to handle a variety of NPM packages.
+- **How It Works**: Bundling tools like Webpack compile and optimize your JavaScript files during the deployment process, ensuring efficient loading and potentially smaller file sizes.
+- **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler.
 
 ### Importmaps
-Importmaps is a newer feature in Rails 7 that simplifies JavaScript management by leveraging the native module-loading capabilities of modern browsers. Instead of compiling and bundling modules server-side, Importmaps allows the browser to load JavaScript modules directly at runtime.
+[Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
 
-#### Key Points:
-- **Simplicity and Convention**: Ideal for applications with simpler JavaScript needs, following Rails conventions.
-- **No Node.js or Webpack**: Simplifies setup by removing the dependency on Node.js or Webpack during development.
-- **Direct ES6 Module Import**: Uses the browser's native capability to import ES6 modules.
-- **Rails-Like Approach**: Emphasizes convention over configuration, aligning well with the Rails philosophy.
+- **Use Case**: Suited for simpler applications that require basic JavaScript functionality or want to follow Rails conventions more closely.
+- **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Deliver Network). This approach reduces server load and simplifies JavaScript management.
+- **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
 
-#### How to Tell If a Project Is Using Importmaps:
-- Look for `importmap-rails` in the `Gemfile`.
-- Presence of `config/importmap.rb` file.
-- JavaScript files are typically located in `app/javascript` without the packs subdirectory.
-- In `app/views/layouts/application.html.erb`, the `javascript_importmap_tags` helper is used instead of `javascript_pack_tag`.
+### JavaScript and CSS Asset Pipeline
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that concatenates and minifies JavaScript and CSS assets, optimizing them for production.
 
-### Deciding Between Webpacker and Importmaps
-- Use Webpacker if your project demands complex JavaScript functionalities, you're integrating frameworks like React or Vue, or you need to manage a variety of NPM packages.
-- Use Importmaps if your project requires simpler JavaScript enhancements, you prefer less configuration, and you want to utilize modern browser capabilities for managing JavaScript.
+- **Use Case**: Good for applications with simpler JavaScript needs or for those who prefer the traditional Rails way of handling assets.
+- **How It Works**: It concatenates all JavaScript files into a single file and compresses them to reduce file size. This happens server-side, simplifying deployment.
 
-In summary, Webpacker and Importmaps cater to different project requirements in Rails 7. Webpacker provides a robust solution for complex JavaScript needs, while Importmaps offers a simpler, more Rails-centric approach for managing JavaScript modules.
+<aside>
+Differences from Node.js `require`: Unlike Node.js `require`, which is part of CommonJS module syntax and used for server-side JavaScript, the Asset Pipeline's `//= require` directive is specific to Rails and is used for managing frontend assets.
+</aside>
 
-<!-- TODO: add more details why this matters -->
-## JavaScript and CSS Asset Pipeline
-Rails 7 supports the asset pipeline, which is a framework to concatenate and minify or compress JavaScript and CSS assets.
+- **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: JavaScript files are placed in `app/assets/javascripts/`, and `//= require` statements are used in `application.js` to include them.
 
-Place your JavaScript files in `app/assets/javascripts/`.
+### Choosing the Right Approach
+- Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires complex JavaScript functionalities, integration with frameworks like React or Vue, or handling numerous [NPM packages](https://www.npmjs.com/).
+- Choose [Importmaps](https://github.com/rails/importmap-rails) for simpler projects that benefit from less configuration and direct browser handling of JavaScript modules.
+- Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) if your project aligns with the traditional Rails asset management approach, particularly for less complex JavaScript integrations.
+Conclusion
 
-<!-- how is this different from node.js require? -->
-Use `//= require` statements in application.js to include them.
-
-<!-- TODO: add more context. maybe mention turbo? -->
-## Turbolinks and JavaScript
-Turbolinks can make your application faster but requires a different approach in handling JavaScript:
-
-Use the `turbolinks:load` event instead of DOMContentLoaded.
-Remember to clean up or re-initialize JavaScript on page changes.
+Each method - [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) - offers distinct advantages and fits different scenarios in a Rails application. Your choice depends on the specifics of your JavaScript requirements, your preferred development workflow, and the specific needs of your project.
 
 ## Practical Example: Toggling Text Visibility
 We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage.
 
-### Part 1: Vanilla JavaScript Approach
+### Part 1: "Vanilla" JavaScript Approach
 The vanilla approach involves directly manipulating the DOM using JavaScript. It's straightforward but requires managing event listeners and ensuring the DOM is fully loaded before script execution.
+
+<aside>
+"Vanilla" JavaScript simply means plain JavaScript without any additional libraries, frameworks, or plugins.
+</aside>
 
 <!--
 - Direct DOM Manipulation: The script directly manipulates DOM elements using getElementById and classList.
@@ -253,4 +275,4 @@ Update the HTML to use Stimulus:
 - [Stimulus](https://stimulus.hotwired.dev/)
 
 ## Conclusion
-In this lesson, you've learned two different ways to add interactive features to your Rails application. The traditional JavaScript approach offers direct control over the DOM, while Stimulus.js provides a more structured and Rails-integrated method. Understanding both allows you to choose the right tool for your project's needs.
+In this lesson, you've learned two different ways to add interactive features to your Rails application. The vanilla JavaScript approach offers direct control over the DOM, while [Stimulus](https://stimulus.hotwired.dev/) provides a more structured and Rails-integrated method. Understanding both allows you to choose the right tool for your project's needs.
