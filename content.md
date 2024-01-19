@@ -205,9 +205,9 @@ Stimulus.js is a modest JavaScript framework designed for Rails applications. It
 #### Step 1: Setting Up Stimulus
 Run the command to install Stimulus, if not already done:
 
-```bash
-./bin/rails webpacker:install:stimulus
-```
+1. Add the `stimulus-rails` gem to your `Gemfile`: `gem 'stimulus-rails'`
+2. Run `./bin/bundle install`.
+3. Run `./bin/rails stimulus:install`
 
 #### Step 2: Creating a Stimulus Controller
 Generate a Stimulus controller:
