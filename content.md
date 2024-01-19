@@ -16,8 +16,8 @@ app/
       your_custom_script.js
     application.js
 ```
-- **Channels**: Used for ActionCable related files.
-- **Controllers**: Stimulus controllers are typically placed here.
+- **Channels**: Used for [ActionCable](https://guides.rubyonrails.org/action_cable_overview.html) related files.
+- **Controllers**: [Stimulus](https://github.com/hotwired/stimulus-rails) controllers are typically placed here.
 - **Custom**: Create custom directories like `custom/` or `util/` for your specific scripts.
 - **application.js**: The JavaScript manifest file. You can think of it as a central directory or index of your JavaScript files.
 
@@ -81,6 +81,7 @@ In the rendered HTML of the deployed site, it translates to something like:
 ```
 This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
 
+<!-- TODO: add explanation of differences in event handling between `document`, `window`, and specific elements -->
 ## Understanding Lifecycle Methods in JavaScript
 Lifecycle methods are crucial in understanding how your JavaScript interacts with the DOM.
 
@@ -89,14 +90,11 @@ Triggers when the initial HTML document has been completely loaded and parsed.
 Does not wait for stylesheets, images, and subframes to finish loading.
 
 ```javascript
+// Use `turbolinks:load` event if your application is using Turbolinks https://github.com/turbolinks/turbolinks.
 document.addEventListener('DOMContentLoaded', (event) => {
   // Your code goes here
 });
 ```
-
-<aside>
-Use the `turbolinks:load` event instead of `DOMContentLoaded` if your application is using [Turbolinks](https://github.com/turbolinks/turbolinks).
-</aside>
 
 ### The `load` Event
 Triggered when the entire page, including all dependent resources (like images), is fully loaded.
@@ -125,7 +123,7 @@ Rails 7 offers several approaches for handling JavaScript, each catering to diff
 [Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
 
 - **Use Case**: Suited for simpler applications that require basic JavaScript functionality or want to follow Rails conventions more closely.
-- **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Deliver Network). This approach reduces server load and simplifies JavaScript management.
+- **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Delivery Network). This approach reduces server load and simplifies JavaScript management.
 - **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
 
 ### JavaScript and CSS Asset Pipeline
