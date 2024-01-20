@@ -128,7 +128,7 @@ Create a view `app/views/pages/home.html.erb` and include an `onclick` handler i
 
 ```erb
 <!-- app/views/pages/home.html.erb -->
-<p id="hidden-text" class="hidden-text">
+<p id="my-hidden-text" class="hidden">
   This is hidden text.
 </p>
 
@@ -143,8 +143,8 @@ Define the `toggleTextVisibility` function in a `<script>` tag within the HTML f
 <!-- Directly in the HTML file -->
 <script>
   function toggleTextVisibility() {
-    const text = document.getElementById('hidden-text');
-    text.classList.toggle('hidden-text');
+    const text = document.getElementById('my-hidden-text');
+    text.classList.toggle('hidden');
   }
 </script>
 ```
@@ -153,8 +153,8 @@ Even better, keep the JavaScript separate:
 ```javascript
 // app/javascript/custom/toggle_visibility.js
 function toggleTextVisibility() {
-  const text = document.getElementById('hidden-text');
-  text.classList.toggle('hidden-text');
+  const text = document.getElementById('my-hidden-text');
+  text.classList.toggle('hidden');
 }
 ```
 And then include it in your `application.js`:
@@ -165,12 +165,12 @@ import "../custom/toggle_visibility"
 ```
 
 #### Step 3: CSS
-Add the CSS for `.hidden-text`:
+Add the CSS for `.hidden`:
 
 ```css
 /* app/assets/stylesheets/application.css */
 
-.hidden-text {
+.hidden {
   display: none;
 }
 ```
@@ -204,7 +204,7 @@ Generate a Stimulus controller:
 Edit the controller:
 
 ```javascript
-// app/javascript/controllers/toggle_controller.js
+// app/javascript/controllers/toggle_hidden_controller.js
 
 import { Controller } from "stimulus";
 
@@ -212,7 +212,7 @@ export default class extends Controller {
   static targets = ["text"]
 
   toggle() {
-    this.textTarget.classList.toggle('hidden-text');
+    this.textTarget.classList.toggle('hidden');
   }
 }
 ```
@@ -223,8 +223,8 @@ Update the HTML to use Stimulus:
 ```erb
 <!-- app/views/pages/home.html.erb -->
 
-<div data-controller="toggle">
-  <p data-toggle-target="text" class="hidden-text">
+<div data-controller="toggle-hidden">
+  <p data-toggle-hidden-target="text" class="hidden">
     This is hidden text.
   </p>
 
