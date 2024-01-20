@@ -42,7 +42,7 @@ console.log(sayHello('Alice'));
 ```
 
 ## Understanding `javascript_include_tag` in Rails
-The `javascript_include_tag` is a built-in Rails helper used to include JavaScript files in your HTML templates. It generates a script tag to link JavaScript files to your HTML pages. This is an essential part of integrating JavaScript into your Rails views.
+The `javascript_include_tag` is a built-in Rails helper used to include JavaScript files in your HTML templates. It generates a `<script>` tag to link JavaScript files to your HTML pages. This is an essential part of integrating JavaScript into your Rails views.
 
 ### Basic Usage
 In your application layout file `app/views/layouts/application.html.erb`, you would typically use `javascript_include_tag` to include the main JavaScript file:
@@ -121,22 +121,10 @@ Each method - [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps
 We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage.
 
 ### Part 1: "Vanilla" JavaScript Approach
-The vanilla approach involves directly manipulating the DOM using JavaScript. It's straightforward but requires managing event listeners and ensuring the DOM is fully loaded before script execution.
-
-<aside>
-"Vanilla" JavaScript simply means plain JavaScript without any additional libraries, frameworks, or plugins.
-</aside>
-
-<!--
-- Direct DOM Manipulation: The script directly manipulates DOM elements using getElementById and classList.
-- Event Listeners: Manually adding event listeners in the JavaScript file.
-- Script Initialization: Ensuring that scripts are initialized on DOMContentLoaded.
-- Loose Coupling with HTML: The JavaScript is somewhat decoupled from the HTML structure, relying on id and class selectors. 
--->
-
+Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML.
 
 #### Step 1: Creating the View
-Include a paragraph and a button:
+Create a view `app/views/pages/home.html.erb` and include an `onclick` handler in the `<button>`:
 
 ```erb
 <!-- app/views/pages/home.html.erb -->
@@ -144,36 +132,40 @@ Include a paragraph and a button:
   This is hidden text.
 </p>
 
-<button id="toggle-button">Toggle Visibility</button>
+<button onclick="toggleTextVisibility()">Toggle Visibility</button>
 ```
+In this code, the `toggleTextVisibility` function will be called when the button is clicked.
 
 #### Step 2: Adding JavaScript
-Create a function to toggle the visibility and add an event listener to the button:
+Define the `toggleTextVisibility` function in a `<script>` tag within the HTML file or in a separate JavaScript file:
+
+```html
+<!-- Directly in the HTML file -->
+<script>
+  function toggleTextVisibility() {
+    const text = document.getElementById('hidden-text');
+    text.classList.toggle('hidden-text');
+  }
+</script>
+```
+Even better, keep the JavaScript separate:
 
 ```javascript
 // app/javascript/custom/toggle_visibility.js
-
 function toggleTextVisibility() {
   const text = document.getElementById('hidden-text');
   text.classList.toggle('hidden-text');
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const button = document.getElementById('toggle-button');
-  button.addEventListener('click', toggleTextVisibility);
-});
 ```
-
-#### Step 3: Including JavaScript in Application
-Import the script:
+And then include it in your `application.js`:
 
 ```javascript
-// app/javascript/packs/application.js
+// app/javascript/application.js
 import "../custom/toggle_visibility"
 ```
 
-#### Step 4: CSS
-Add the .hidden-text class:
+#### Step 3: CSS
+Add the CSS for `.hidden-text`:
 
 ```css
 /* app/assets/stylesheets/application.css */
@@ -182,6 +174,8 @@ Add the .hidden-text class:
   display: none;
 }
 ```
+
+<!-- TODO: add conclusion and a gif -->
 
 ### Part 2: Stimulus.js Approach
 Stimulus.js is a modest JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects in a structured and organized manner. It's beneficial for its ease of use, integration with Rails conventions, and clarity in connecting HTML to JavaScript.
