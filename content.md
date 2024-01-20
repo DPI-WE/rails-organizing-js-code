@@ -89,7 +89,7 @@ Rails 7 offers several approaches for handling JavaScript, each catering to diff
 <!-- TODO: Talk about tradeoffs? slower development because of compile step, more complexity, etc. -->
 - **Use Case**: Ideal for complex applications that utilize Single Page Application (SPA) JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or need to handle a variety of NPM packages.
 - **How It Works**: Bundling tools like Webpack compile and optimize your JavaScript files during the deployment process, ensuring efficient loading and potentially smaller file sizes.
-- **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler.
+- **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler (eg [Webpack](https://github.com/webpack/webpack)).
 
 ### Importmaps
 [Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
@@ -105,7 +105,7 @@ The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Ra
 - **How It Works**: It concatenates all JavaScript files into a single file and compresses them to reduce file size. This happens server-side, simplifying deployment.
 
 <aside>
-Differences from Node.js `require`: Unlike Node.js `require`, which is part of CommonJS module syntax and used for server-side JavaScript, the Asset Pipeline's `//= require` directive is specific to Rails and is used for managing frontend assets.
+Differences from Node.js `require`: Unlike Node.js `require`, which is part of CommonJS module syntax and used for server-side JavaScript, the Asset Pipeline's `//= require` is specific to Rails.
 </aside>
 
 - **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: JavaScript files are placed in `app/assets/javascripts/`, and `//= require` statements are used in `app/assets/javascripts/application.js` to include them.
