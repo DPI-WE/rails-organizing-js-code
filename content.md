@@ -81,41 +81,12 @@ In the rendered HTML of the deployed site, it translates to something like:
 ```
 This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
 
-<!-- TODO: add explanation of differences in event handling between `document`, `window`, and specific elements -->
-<!-- TODO: refactor -->
-<!-- ## Understanding Lifecycle Methods in JavaScript
-Lifecycle methods are crucial in understanding how your JavaScript interacts with the DOM.
-
-### The `DOMContentLoaded` Event
-Triggers when the initial HTML document has been completely loaded and parsed.
-Does not wait for stylesheets, images, and subframes to finish loading.
-
-```javascript
-// Use `turbolinks:load` event if your application is using Turbolinks https://github.com/turbolinks/turbolinks.
-document.addEventListener('DOMContentLoaded', (event) => {
-  // Your code goes here
-});
-```
-
-### The `load` Event
-Triggered when the entire page, including all dependent resources (like images), is fully loaded.
-
-```javascript
-window.addEventListener('load', (event) => {
-  // Your code goes here
-});
-```
-
-### The `beforeunload` and `unload` Events
-- `beforeunload` can be used to alert the user before leaving a page.
-- `unload` triggers when the document or a child resource is being unloaded. -->
-
 ## JavaScript Management in Rails: Bundling, Importmaps, and the Asset Pipeline
 Rails 7 offers several approaches for handling JavaScript, each catering to different needs: [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html). Understanding the differences and use cases of each helps in choosing the right tool for your project.
 
 ### [Bundling](https://github.com/rails/jsbundling-rails)
 [Bundling](https://github.com/rails/jsbundling-rails) refers to the process of compiling and packaging multiple JavaScript files into one or a few files. This approach is efficient and reduces the number of requests a browser makes to load a page.
-
+<!-- TODO: Talk about tradeoffs? slower development because of compile step, more complexity, etc. -->
 - **Use Case**: Ideal for complex applications that utilize Single Page Application (SPA) JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or need to handle a variety of NPM packages.
 - **How It Works**: Bundling tools like Webpack compile and optimize your JavaScript files during the deployment process, ensuring efficient loading and potentially smaller file sizes.
 - **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler.
