@@ -21,11 +21,9 @@ app/
 - **Custom**: Create custom directories like `custom/` or `util/` for your specific scripts.
 - **application.js**: The JavaScript manifest file. You can think of it as a central directory or index of your JavaScript files.
 
-### Importing ES6 Modules
-ES6 modules allow you to break your JavaScript into smaller, reusable components.
-- Create separate modules in the `javascript/` directory.
-- Export functions, objects, or classes from these modules.
-- Import them in `app/javascript/application.js` or any other module where you need them.
+<aside>
+### ES6 Modules
+ES6 (also known as ECMAScript 6) is a recent update to the JavaScript programming language. ES6 modules allow you to break your JavaScript into smaller, reusable components. One approach to organize JavaScript in your project is to create separate modules in the `javascript/` directory. Then, export functions, objects, or classes from these modules and import them in `app/javascript/application.js` or any other module where you need them.
 
 Example:
 
@@ -40,64 +38,76 @@ import { sayHello } from './custom/hello';
 
 console.log(sayHello('Alice'));
 ```
-
-## Understanding `javascript_include_tag` in Rails
-The `javascript_include_tag` is a built-in Rails helper used to include JavaScript files in your HTML templates. It generates a `<script>` tag to link JavaScript files to your HTML pages. This is an essential part of integrating JavaScript into your Rails views.
-
-### Basic Usage
-In your application layout file `app/views/layouts/application.html.erb`, you would typically use `javascript_include_tag` to include the main JavaScript file:
-
-```erb
-<%= javascript_include_tag 'application' %>
-```
-This line automatically includes the `app/javascript/application.js` file, which is usually the main JavaScript file in a Rails application. Rails will handle the processing of this file, which might involve bundling (more on this later).
-
-<aside>
-
-### `data-turbo-track` Attribute
-The `data-turbo-track` attribute is specifically related to [Turbo Drive](https://turbo.hotwired.dev/handbook/drive), a part of the [Hotwire toolkit](https://hotwired.dev/).
-
-```erb
-<%= javascript_include_tag 'application', 'data-turbo-track': 'reload' %>
-```
-
-### What Turbo Drive Does:
-- **Speeds Up Navigation**: Turbo Drive is designed to make navigation in a Rails application faster by partially updating the page's HTML without a full reload.
-- **Ajax-like Behavior**: It achieves this by intercepting clicks on links and form submissions, and instead of doing a full page load, it updates only the body and the head of the page.
-
-### The Role of `data-turbo-track`
-- **Cache Management**: The `data-turbo-track: 'reload'` attribute is used to tell Turbo Drive how to manage caching for scripts.
-- **Reload Behavior**: When set to reload, it ensures that if the JavaScript file changes, Turbo Drive will fully reload the page rather than using its caching mechanism. This is crucial for ensuring that users always receive the most up-to-date version of your JavaScript.
-
-### When Is This Important?
-This feature becomes particularly important in applications where JavaScript files change often, and you need to ensure that these changes are reflected immediately to the user without them having to clear their cache or force-reload the page.
-
 </aside>
 
-In the rendered HTML of the deployed site, it translates to something like:
+## JavaScript Management in Rails: the Asset Pipeline with Import Maps and Bundling
+Rails 7 offers several approaches for handling JavaScript, each catering to different needs: the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails), [Bundling](https://github.com/rails/jsbundling-rails), and API-only approach. Understanding the differences and use cases of each helps in choosing the right tool for your project.
 
-```html
-<script src="/assets/application-abcdef1234567890.js"></script>
-```
-This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
-
-## JavaScript Management in Rails: Bundling, Importmaps, and the Asset Pipeline
-Rails 7 offers several approaches for handling JavaScript, each catering to different needs: [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html). Understanding the differences and use cases of each helps in choosing the right tool for your project.
-
-### JavaScript and CSS Asset Pipeline
+### Asset Pipeline: Sprockets with Import Maps
 <!--
 - Talk about[sprockets](https://github.com/rails/sprockets)?
-- Talk about difficulties with managing external dependencies, updates, version compatibility, etc.
+- Talk about adding dependencies (`vendor/`).
+- minification
+- cache-busting
+- talk about the `public/` folder and caching. why a 
 -->
-The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that concatenates and minifies JavaScript and CSS assets, optimizing them for production.
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that handles the delivery of JavaScript and CSS assets. This done using techniques to concatenate, minify, and cache JavaScript and CSS assets, optimizing them for production.
 
-<!-- TODO: an aside on minification -->
+<aside>
+  #### Minification
+  **Minification** is the process of removing unnecessary characters from source code (like whitespace, newline characters, and comments) without changing its functionality. This is done to reduce the size of the assets (JavaScript, CSS, etc.), which in turn decreases the amount of data that needs to be transferred over the network to the user's browser, resulting in faster page load times. There is a convention to add a `min` suffix to minified files. (eg `filename.min.js`)
+</aside>
 
-- **Use Case**: Good for applications with simpler JavaScript needs or for those who prefer the traditional Rails way of handling assets.
-- **How It Works**: It concatenates all JavaScript files into a single file and compresses them to reduce file size. This happens server-side, simplifying deployment.
+<aside>
+  #### Cacheing
+  In the rendered HTML of the deployed site, it translates to something like:
+
+  ```html
+  <script src="/assets/application-abcdef1234567890.js"></script>
+  ```
+  This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
+</aside>
+
+```
+app/
+  assets/
+    config/
+      manifest.js
+    images/
+    stylesheets/
+```
+
+#### Sprockets
+[Sprockets](https://github.com/rails/sprockets) concatenates JavaScript and CSS files into single files and compresses them to reduce size. This happens server-side, simplifying deployment. Projects using the Asset Pipeline will have the `sprockets-rails` gem in the `Gemfile`. There is a manifest file at `app/assets/config/manifest.js` that indexes all the assets you want to concatenate and minify. `//=` directives are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
+
+```javascript
+// app/assets/config/manifest.js
+
+//= link_tree ../images
+//= link_directory ../stylesheets .css
+//= link_tree ../../javascript .js
+```
+
+<!-- TODO:
+- limitations of sprockets
+  - vendor/
+  - versioning of dependencies
+- lead into importmaps
+-->
+
+#### Importmaps
+[Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
+
+<!-- basically just es6 imports in the browser -->
+- **Use Case**: Suited for simpler applications that require basic JavaScript functionality or want to follow Rails conventions more closely.
+- **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Delivery Network). This approach reduces server load and simplifies JavaScript management.
+- **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
 
 
-- **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: Projects using the Asset Pipeline will have the `sprockets-rails` gem in the `Gemfile`. `//= require` statements are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
+<!-- TODO
+- chnage to alternative bundling approaches? jsbundling, webpacker, etc.
+- sprockets *technically* is transpiling/bundling in a more limited way
+-->
 
 ### [Bundling](https://github.com/rails/jsbundling-rails)
 [Bundling](https://github.com/rails/jsbundling-rails) refers to the process of compiling and packaging multiple JavaScript files into one or a few files. This approach is efficient and reduces the number of requests a browser makes to load a page.
@@ -107,20 +117,11 @@ The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Ra
 - **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler (eg [Webpack](https://github.com/webpack/webpack), [esbuild](https://esbuild.github.io/), etc.).
 
 <!-- TODO
+- limitations of importmaps and asset pipeline (transpiling)
 - discuss API-only backend with SPA frontend 
 - would this be considered a sub-set of bundling?
 - common at large organizations
-- micro-services?
 -->
-
-### Importmaps
-[Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
-
-<!-- basically just es6 imports in the browser -->
-- **Use Case**: Suited for simpler applications that require basic JavaScript functionality or want to follow Rails conventions more closely.
-- **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Delivery Network). This approach reduces server load and simplifies JavaScript management.
-- **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
-
 
 
 
