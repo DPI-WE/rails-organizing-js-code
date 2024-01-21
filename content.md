@@ -84,12 +84,34 @@ This line in the deployed HTML is responsible for loading your application's Jav
 ## JavaScript Management in Rails: Bundling, Importmaps, and the Asset Pipeline
 Rails 7 offers several approaches for handling JavaScript, each catering to different needs: [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html). Understanding the differences and use cases of each helps in choosing the right tool for your project.
 
+### JavaScript and CSS Asset Pipeline
+<!--
+- Talk about[sprockets](https://github.com/rails/sprockets)?
+- Talk about difficulties with managing external dependencies, updates, version compatibility, etc.
+-->
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that concatenates and minifies JavaScript and CSS assets, optimizing them for production.
+
+<!-- TODO: an aside on minification -->
+
+- **Use Case**: Good for applications with simpler JavaScript needs or for those who prefer the traditional Rails way of handling assets.
+- **How It Works**: It concatenates all JavaScript files into a single file and compresses them to reduce file size. This happens server-side, simplifying deployment.
+
+
+- **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: Projects using the Asset Pipeline will have the `sprockets-rails` gem in the `Gemfile`. `//= require` statements are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
+
 ### [Bundling](https://github.com/rails/jsbundling-rails)
 [Bundling](https://github.com/rails/jsbundling-rails) refers to the process of compiling and packaging multiple JavaScript files into one or a few files. This approach is efficient and reduces the number of requests a browser makes to load a page.
 <!-- TODO: Talk about tradeoffs? slower development because of compile step, more difficult to configure, etc. -->
 - **Use Case**: Ideal for complex applications that utilize Single Page Application (SPA) JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or need to handle a variety of NPM packages.
 - **How It Works**: Bundling tools like Webpack compile and optimize your JavaScript files during the deployment process, ensuring efficient loading and potentially smaller file sizes.
 - **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler (eg [Webpack](https://github.com/webpack/webpack), [esbuild](https://esbuild.github.io/), etc.).
+
+<!-- TODO
+- discuss API-only backend with SPA frontend 
+- would this be considered a sub-set of bundling?
+- common at large organizations
+- micro-services?
+-->
 
 ### Importmaps
 [Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
@@ -99,23 +121,14 @@ Rails 7 offers several approaches for handling JavaScript, each catering to diff
 - **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Delivery Network). This approach reduces server load and simplifies JavaScript management.
 - **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
 
-### JavaScript and CSS Asset Pipeline
-The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that concatenates and minifies JavaScript and CSS assets, optimizing them for production.
 
-- **Use Case**: Good for applications with simpler JavaScript needs or for those who prefer the traditional Rails way of handling assets.
-- **How It Works**: It concatenates all JavaScript files into a single file and compresses them to reduce file size. This happens server-side, simplifying deployment.
 
-<aside>
-Differences from Node.js `require`: Unlike Node.js `require`, which is part of CommonJS module syntax and used for server-side JavaScript, the Asset Pipeline's `//= require` is specific to Rails.
-</aside>
 
-- **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: JavaScript files are placed in `app/assets/javascripts/`, and `//= require` statements are used in `app/assets/javascripts/application.js` to include them.
-
-<!-- TODO: discuss API-only backend with SPA frontend -->
 
 ### Choosing the Right Approach
 - Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like  [React](https://react.dev/) or [Vue](https://vuejs.org/), or handling numerous [NPM packages](https://www.npmjs.com/).
 - Choose [Importmaps](https://github.com/rails/importmap-rails) for simpler projects that benefit from less configuration and direct browser handling of JavaScript modules.
+<!-- TODO: API-only with SPA -->
 - Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) if your project aligns with the traditional Rails asset management approach, particularly for less complex JavaScript integrations.
 
 Each method - [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) - offers distinct advantages and fits different scenarios in a Rails application. Your choice depends on the specifics of your JavaScript requirements, your preferred development workflow, and the specific needs of your project.
