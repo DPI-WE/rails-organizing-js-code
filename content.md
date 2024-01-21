@@ -86,14 +86,15 @@ Rails 7 offers several approaches for handling JavaScript, each catering to diff
 
 ### [Bundling](https://github.com/rails/jsbundling-rails)
 [Bundling](https://github.com/rails/jsbundling-rails) refers to the process of compiling and packaging multiple JavaScript files into one or a few files. This approach is efficient and reduces the number of requests a browser makes to load a page.
-<!-- TODO: Talk about tradeoffs? slower development because of compile step, more complexity, etc. -->
+<!-- TODO: Talk about tradeoffs? slower development because of compile step, more difficult to configure, etc. -->
 - **Use Case**: Ideal for complex applications that utilize Single Page Application (SPA) JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or need to handle a variety of NPM packages.
 - **How It Works**: Bundling tools like Webpack compile and optimize your JavaScript files during the deployment process, ensuring efficient loading and potentially smaller file sizes.
-- **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler (eg [Webpack](https://github.com/webpack/webpack)).
+- **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler (eg [Webpack](https://github.com/webpack/webpack), [esbuild](https://esbuild.github.io/), etc.).
 
 ### Importmaps
 [Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
 
+<!-- basically just es6 imports in the browser -->
 - **Use Case**: Suited for simpler applications that require basic JavaScript functionality or want to follow Rails conventions more closely.
 - **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Delivery Network). This approach reduces server load and simplifies JavaScript management.
 - **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
@@ -109,6 +110,8 @@ Differences from Node.js `require`: Unlike Node.js `require`, which is part of C
 </aside>
 
 - **Identifying the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)**: JavaScript files are placed in `app/assets/javascripts/`, and `//= require` statements are used in `app/assets/javascripts/application.js` to include them.
+
+<!-- TODO: discuss API-only backend with SPA frontend -->
 
 ### Choosing the Right Approach
 - Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like  [React](https://react.dev/) or [Vue](https://vuejs.org/), or handling numerous [NPM packages](https://www.npmjs.com/).
@@ -175,17 +178,10 @@ Add the CSS for `.hidden`:
 }
 ```
 
-<!-- TODO: add conclusion and a gif -->
+<!-- TODO: add conclusion and a gif of the app -->
 
 ### Part 2: Stimulus.js Approach
-Stimulus.js is a modest JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects in a structured and organized manner. It's beneficial for its ease of use, integration with Rails conventions, and clarity in connecting HTML to JavaScript.
-
-<!--
-- Declarative Interaction: Stimulus allows for a more declarative approach, connecting HTML and JavaScript via data attributes.
-- Controllers and Targets: JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
-- Automatic Initialization: Stimulus automatically initializes controllers and their actions without needing to manually set up event listeners or wait for DOMContentLoaded.
-- Stronger Coupling: There's a stronger coupling between the HTML structure and JavaScript functionality, making it clearer how elements are intended to behave.
--->
+Stimulus.js is a JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
 
 #### Step 1: Setting Up Stimulus
 Run the command to install Stimulus, if not already done:
