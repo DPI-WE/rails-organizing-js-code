@@ -1,6 +1,8 @@
 # JavaScript level up with Stimulus.js
 In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Building on this foundation, we're now set to delve deeper into the organization of JavaScript code and three distinct approaches to managing JavaScript in a Rails environment. To bring these concepts to life, we'll implement a practical example, implementing interactive features in a Ruby on Rails application using both Vanilla JavaScript and Stimulus.js.
 
+
+<!-- TODO: make this more of a 'history' of javascript in Rails for context -->
 ## Understanding JavaScript Organization in Rails
 Typically, JavaScript files in Rails are placed under `app/javascript`. As your application grows, keeping your javascript code in this directory with a clear structure keeps your codebase manageable. Clear organization also helps team members (and instructors 🥹) to understand and contribute to the codebase effectively.
 
@@ -50,6 +52,7 @@ Rails 7 offers several approaches for handling JavaScript, each catering to diff
 - minification
 - cache-busting
 - talk about the `public/` folder and caching. why a 
+- add context around supporting all the different browsers out there
 -->
 The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that handles the delivery of JavaScript and CSS assets. This done using techniques to concatenate, minify, and cache JavaScript and CSS assets, optimizing them for production.
 
@@ -105,6 +108,9 @@ app/
 <!-- TODO
 - chnage to alternative bundling approaches? jsbundling, webpacker, etc.
 - sprockets *technically* is transpiling/bundling in a more limited way
+- talk about transpiling (es6 -> es5)
+
+- The main limitation of sprockets and importmaps is that there is no support for transpiling so you can't use things like Babel, TypeScript, Sass, React JSX format, or Tailwind CSS. 
 -->
 
 ### [Bundling](https://github.com/rails/jsbundling-rails)
@@ -129,10 +135,15 @@ app/
 
 Each method - [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) - offers distinct advantages and fits different scenarios in a Rails application. Your choice depends on the specifics of your JavaScript requirements, your preferred development workflow, and the specific needs of your project.
 
+
+<!--
+TODO:
+- add more step by step setup for each example
+-->
 ## Practical Example: Toggling Text Visibility
 We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage.
 
-### Part 1: "Vanilla" JavaScript Approach
+### Part 1: "Vanilla" JavaScript Approach (with Asset Pipeline)
 Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML.
 
 #### Step 1: Creating the View
@@ -189,7 +200,7 @@ Add the CSS for `.hidden`:
 
 <!-- TODO: add conclusion and a gif of the app -->
 
-### Part 2: Stimulus.js Approach
+### Part 2: Stimulus.js Approach (with Import Maps)
 Stimulus.js is a JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
 
 #### Step 1: Setting Up Stimulus
@@ -236,6 +247,12 @@ Update the HTML to use Stimulus:
   <button data-action="click->toggle#toggle">Toggle Visibility</button>
 </div>
 ```
+
+<!-- 
+TODO:
+- add a React.js example?
+- add a API-only example?
+-->
 
 ## Resources
 
