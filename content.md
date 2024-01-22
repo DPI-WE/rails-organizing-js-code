@@ -1,5 +1,5 @@
 # JavaScript level up with Stimulus.js
-In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Building on this foundation, we're now set to delve deeper into the organization of JavaScript code, the role of `javascript_include_tag`, various lifecycle methods, and three distinct approaches to managing JavaScript in a Rails environment. To bring these concepts to life, we'll implement a practical example, implementing interactive features in a Ruby on Rails application using both Vanilla JavaScript and Stimulus.js.
+In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Building on this foundation, we're now set to delve deeper into the organization of JavaScript code and three distinct approaches to managing JavaScript in a Rails environment. To bring these concepts to life, we'll implement a practical example, implementing interactive features in a Ruby on Rails application using both Vanilla JavaScript and Stimulus.js.
 
 ## Understanding JavaScript Organization in Rails
 Typically, JavaScript files in Rails are placed under `app/javascript`. As your application grows, keeping your javascript code in this directory with a clear structure keeps your codebase manageable. Clear organization also helps team members (and instructors 🥹) to understand and contribute to the codebase effectively.
@@ -40,7 +40,7 @@ console.log(sayHello('Alice'));
 ```
 </aside>
 
-## JavaScript Management in Rails: the Asset Pipeline with Import Maps and Bundling
+## JavaScript Management in Rails: the Asset Pipeline and Bundling
 Rails 7 offers several approaches for handling JavaScript, each catering to different needs: the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails), [Bundling](https://github.com/rails/jsbundling-rails), and API-only approach. Understanding the differences and use cases of each helps in choosing the right tool for your project.
 
 ### Asset Pipeline: Sprockets with Import Maps
@@ -54,13 +54,11 @@ Rails 7 offers several approaches for handling JavaScript, each catering to diff
 The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that handles the delivery of JavaScript and CSS assets. This done using techniques to concatenate, minify, and cache JavaScript and CSS assets, optimizing them for production.
 
 <aside>
-  #### Minification
   **Minification** is the process of removing unnecessary characters from source code (like whitespace, newline characters, and comments) without changing its functionality. This is done to reduce the size of the assets (JavaScript, CSS, etc.), which in turn decreases the amount of data that needs to be transferred over the network to the user's browser, resulting in faster page load times. There is a convention to add a `min` suffix to minified files. (eg `filename.min.js`)
 </aside>
 
 <aside>
-  #### Cacheing
-  In the rendered HTML of the deployed site, it translates to something like:
+  The rendered HTML of the deployed site translates to something like this:
 
   ```html
   <script src="/assets/application-abcdef1234567890.js"></script>
@@ -122,9 +120,6 @@ app/
 - would this be considered a sub-set of bundling?
 - common at large organizations
 -->
-
-
-
 
 ### Choosing the Right Approach
 - Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like  [React](https://react.dev/) or [Vue](https://vuejs.org/), or handling numerous [NPM packages](https://www.npmjs.com/).
