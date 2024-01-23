@@ -374,6 +374,7 @@ TODO:
 
 ## Resources
 
+- [The Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)
 - [Working with JavaScript in Rails](https://guides.rubyonrails.org/working_with_javascript_in_rails.html)
 - [Stimulus](https://stimulus.hotwired.dev/)
 
