@@ -23,30 +23,30 @@ Initially, JavaScript in Rails was often embedded directly within HTML using `<s
 ```
 
 ### The Asset Pipeline Era
-With Rails 3.1, the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) was introduced, addressing the challenges of managing JavaScript. It provided a structured approach to bundling, concatenating, and minifying JavaScript files.
+With Rails 3.1, the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) was introduced, addressing the challenges of managing JavaScript. It provides a structured approach to bundling, concatenating, and minifying JavaScript files.
 
 #### Bundling and Concatenation
-The Asset Pipeline combined multiple JavaScript files into a single file, reducing HTTP requests and improving load times.
+The Asset Pipeline combines multiple JavaScript files into a single file, reducing HTTP requests and improving load times.
 
 #### Caching and Cache-Busting
-The Asset Pipeline also implemented caching strategies. A unique fingerprint (hash) was added to file names `application-abcdef1234567890.js`, ensuring users always received the most updated version.
+The Asset Pipeline also implementes caching strategies. A unique fingerprint (hash) is added to file names (eg `/assets/application-abcdef1234567890.js`), ensuring users always receive the most updated version.
 
 The rendered HTML of the deployed site translates to something like this:
 
 ```html
 <script src="/assets/application-abcdef1234567890.js"></script>
 ```
-This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
+This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. The rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
 
 #### Minification
-Minification removed unnecessary characters from JavaScript files, reducing file size and speeding up page loads.
+Minification removes unnecessary characters from JavaScript files, reducing file size and speeding up page loads.
 
 <aside>
   There is a convention to add a `min` suffix to minified files. (eg `filename.min.js`)
 </aside>
 
 #### Directory Structure and Sprockets
-The Asset Pipeline standardized the organization of these assets in `app/assets/`. 
+The Asset Pipeline standardizes the organization of these assets in `app/assets/`. 
 
 ```
 app/
@@ -80,7 +80,7 @@ app/
 ```
 
 - **Channels**: Used for [ActionCable](https://guides.rubyonrails.org/action_cable_overview.html) related files.
-- **Controllers**: [Stimulus](https://github.com/hotwired/stimulus-rails) controllers are typically placed here.
+- **Controllers**: [Stimulus](https://github.com/hotwired/stimulus-rails) controllers are typically placed here. (more on this later)
 - **Custom**: Create custom directories like `custom/` or `util/` for your specific scripts.
 - **application.js**: The JavaScript manifest file. You can think of it as a central directory or index of your JavaScript files.
 
@@ -88,16 +88,16 @@ app/
 Despite its benefits, the Asset Pipeline has limitations, especially in managing JavaScript dependencies and modern JavaScript tooling.
 
 <aside>
-  Adding external JavaScript dependencies in a Rails application using the Asset Pipeline involved a few more manual steps. The process typically included:
+  Adding external JavaScript dependencies in a Rails application using the Asset Pipeline (before Rails 7) involved a few more manual steps. The process typically included:
 
-  1. The `vendor/assets/javascripts` directory was commonly used to store external JavaScript libraries or frameworks.
+  1. The `vendor/assets/javascripts` directory was used to store external JavaScript libraries or frameworks.
 
   2. Developers had to manually download the JavaScript file (e.g., a jQuery plugin) or copy it from a source and place it into the `vendor/assets/javascripts` directory. This process was not automated and required manual updating for each new version of the library.
 
-  3. `app/assets/javascripts/application.js` was used to include the external library using Sprockets directives.
+  3. `app/assets/config/manifest.js` was used to include the external library using [Sprockets](https://github.com/rails/sprockets) directives.
 
   ```
-    // Example of including an external library in application.js
+    // Example of including an external library in app/assets/config/manifest.js
     //= require jquery
     //= require bootstrap
   ```
@@ -132,16 +132,16 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
 ## Rails 7: Import Maps and Beyond
 
 ### The Role of Import Maps
-[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addressed some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`). 
+[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`). 
 
-<!-- TODO: stronger example of how import maps works -->
+<!-- TODO: stronger step by step example of how import maps works -->
 ```javascript
 // Example of how Import Maps improved dependency management
 import { myFunction } from 'my-dependency';
 ```
 
 ### Alternative Bundling Approaches
-For more complex JavaScript requirements, Rails 7 offers alternative bundling options, catering to applications that use SPA frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or require extensive JavaScript tooling.
+For more complex JavaScript requirements, Rails 7 offers alternative bundling options, catering to applications that use Single Page Application (SPA) frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or require extensive JavaScript tooling.
 
 <!-- TODO: stronger example of how jsbundling works with React -->
 ```javascript
@@ -155,6 +155,7 @@ import React from 'react';
 ### Choosing the Right Approach
 - Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) if your project aligns with the Rails asset management approach, particularly for less complex JavaScript integrations.
 - Choose Alternative Bundling libraries like [jsbundling-rails](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like [React](https://react.dev/) or [Vue](https://vuejs.org/) or extensive JavaScript tooling like [NPM](https://www.npmjs.com/).
+<!-- Choose API-only approach if... -->
 
 <!-- TODO: more step by step setup for each practical example -->
 ## Practical Example: Toggling Text Visibility
