@@ -1,73 +1,52 @@
 # JavaScript level up with Stimulus.js
 In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.com/lessons/203-minimal-js) can enhance the interactivity of our Rails applications using [Ajax with Rails Unobtrusive JavaScript (UJS)](https://learn.firstdraft.com/lessons/204-rails-unobtrusive-ajax). Building on this foundation, we're now set to delve deeper into the organization of JavaScript code and three distinct approaches to managing JavaScript in a Rails environment. To bring these concepts to life, we'll implement a practical example, implementing interactive features in a Ruby on Rails application using both Vanilla JavaScript and Stimulus.js.
 
+## Evolution of JavaScript in Rails
+JavaScript's integration in Rails has evolved significantly, adapting to the changing landscape of web development. Let's explore this evolution and its implications on how we manage JavaScript in a Rails application today.
 
-<!-- TODO: make this more of a 'history' of javascript in Rails for context -->
-## Understanding JavaScript Organization in Rails
-Typically, JavaScript files in Rails are placed under `app/javascript`. As your application grows, keeping your javascript code in this directory with a clear structure keeps your codebase manageable. Clear organization also helps team members (and instructors 🥹) to understand and contribute to the codebase effectively.
+### Early Days: Inline JavaScript
+Initially, JavaScript in Rails was often embedded directly within HTML using `<script>` tags. This approach was straightforward but quickly became unmanageable as applications grew in complexity.
 
-### Directory Structure
-Rails 7 provides a standard way to organize your JavaScript files. Here’s a typical structure:
-
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>JavaScript Alert</h2>
+    <button onclick="myAlertFunction()">Click me</button>
+    <script>
+      function myAlertFunction() {
+        alert("Hello, world!");
+      }
+    </script>
+  </body>
+</html>
 ```
-app/
-  javascript/
-    channels/
-    controllers/
-    custom/
-      your_custom_script.js
-    application.js
+
+### The Asset Pipeline Era
+With Rails 3.1, the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) was introduced, addressing the challenges of managing JavaScript. It provided a structured approach to bundling, concatenating, and minifying JavaScript files.
+
+#### Bundling and Concatenation
+The Asset Pipeline combined multiple JavaScript files into a single file, reducing HTTP requests and improving load times.
+
+#### Caching and Cache-Busting
+The Asset Pipeline also implemented caching strategies. A unique fingerprint (hash) was added to file names `application-abcdef1234567890.js`, ensuring users always received the most updated version.
+
+The rendered HTML of the deployed site translates to something like this:
+
+```html
+<script src="/assets/application-abcdef1234567890.js"></script>
 ```
-- **Channels**: Used for [ActionCable](https://guides.rubyonrails.org/action_cable_overview.html) related files.
-- **Controllers**: [Stimulus](https://github.com/hotwired/stimulus-rails) controllers are typically placed here.
-- **Custom**: Create custom directories like `custom/` or `util/` for your specific scripts.
-- **application.js**: The JavaScript manifest file. You can think of it as a central directory or index of your JavaScript files.
+This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
+
+#### Minification
+Minification removed unnecessary characters from JavaScript files, reducing file size and speeding up page loads.
 
 <aside>
-### ES6 Modules
-ES6 (also known as ECMAScript 6) is a recent update to the JavaScript programming language. ES6 modules allow you to break your JavaScript into smaller, reusable components. One approach to organize JavaScript in your project is to create separate modules in the `javascript/` directory. Then, export functions, objects, or classes from these modules and import them in `app/javascript/application.js` or any other module where you need them.
-
-Example:
-
-```javascript
-// app/custom/hello.js
-export function sayHello(name) {
-  return `Hello, ${name}!`;
-}
-
-// app/javascript/application.js
-import { sayHello } from './custom/hello';
-
-console.log(sayHello('Alice'));
-```
+  There is a convention to add a `min` suffix to minified files. (eg `filename.min.js`)
 </aside>
 
-## JavaScript Management in Rails: the Asset Pipeline and Bundling
-Rails 7 offers several approaches for handling JavaScript, each catering to different needs: the traditional [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails), [Bundling](https://github.com/rails/jsbundling-rails), and API-only approach. Understanding the differences and use cases of each helps in choosing the right tool for your project.
-
-### Asset Pipeline: Sprockets with Import Maps
-<!--
-- Talk about[sprockets](https://github.com/rails/sprockets)?
-- Talk about adding dependencies (`vendor/`).
-- minification
-- cache-busting
-- talk about the `public/` folder and caching. why a 
-- add context around supporting all the different browsers out there
--->
-The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) is a Rails framework that handles the delivery of JavaScript and CSS assets. This done using techniques to concatenate, minify, and cache JavaScript and CSS assets, optimizing them for production.
-
-<aside>
-  **Minification** is the process of removing unnecessary characters from source code (like whitespace, newline characters, and comments) without changing its functionality. This is done to reduce the size of the assets (JavaScript, CSS, etc.), which in turn decreases the amount of data that needs to be transferred over the network to the user's browser, resulting in faster page load times. There is a convention to add a `min` suffix to minified files. (eg `filename.min.js`)
-</aside>
-
-<aside>
-  The rendered HTML of the deployed site translates to something like this:
-
-  ```html
-  <script src="/assets/application-abcdef1234567890.js"></script>
-  ```
-  This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. You probably noticed the rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
-</aside>
+#### Directory Structure and Sprockets
+The Asset Pipeline standardized the organization of these assets in `app/assets/`. 
 
 ```
 app/
@@ -78,8 +57,7 @@ app/
     stylesheets/
 ```
 
-#### Sprockets
-[Sprockets](https://github.com/rails/sprockets) concatenates JavaScript and CSS files into single files and compresses them to reduce size. This happens server-side, simplifying deployment. Projects using the Asset Pipeline will have the `sprockets-rails` gem in the `Gemfile`. There is a manifest file at `app/assets/config/manifest.js` that indexes all the assets you want to concatenate and minify. `//=` directives are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
+[Sprockets](https://github.com/rails/sprockets), a key component of the Pipeline, handled the concatenation and compression of assets. Projects using the Asset Pipeline will have the `sprockets-rails` gem in the `Gemfile`. There is a manifest file at `app/assets/config/manifest.js` that indexes all the assets you want to concatenate and minify. `//=` directives are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
 
 ```javascript
 // app/assets/config/manifest.js
@@ -89,57 +67,96 @@ app/
 //= link_tree ../../javascript .js
 ```
 
-<!-- TODO:
-- limitations of sprockets
-  - vendor/
-  - versioning of dependencies
-- lead into importmaps
--->
+Typically, JavaScript files in Rails are placed under `app/javascript`. As your application grows, keeping your javascript code in this directory with a clear structure keeps your codebase manageable. Clear organization also helps team members (and instructors 🥹) to understand and contribute to the codebase effectively. Here’s a typical structure:
 
-#### Importmaps
-[Importmaps](https://github.com/rails/importmap-rails) leverage modern browser capabilities to load JavaScript modules directly from the browser at runtime, without the need for compilation or bundling. (Just like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`.)
+```
+app/
+  javascript/
+    channels/
+    controllers/
+    custom/
+      your_custom_script.js
+    application.js
+```
 
-<!-- basically just es6 imports in the browser -->
-- **Use Case**: Suited for simpler applications that require basic JavaScript functionality or want to follow Rails conventions more closely.
-- **How It Works**: Importmaps allow the browser to manage JavaScript modules at runtime,  loading them from a CDN (Content Delivery Network). This approach reduces server load and simplifies JavaScript management.
-- **Identifying Importmaps**: Look for the `importmap-rails` gem in the `Gemfile` and the presence of `config/importmap.rb` in the project.
+- **Channels**: Used for [ActionCable](https://guides.rubyonrails.org/action_cable_overview.html) related files.
+- **Controllers**: [Stimulus](https://github.com/hotwired/stimulus-rails) controllers are typically placed here.
+- **Custom**: Create custom directories like `custom/` or `util/` for your specific scripts.
+- **application.js**: The JavaScript manifest file. You can think of it as a central directory or index of your JavaScript files.
+
+#### Limitations 
+Despite its benefits, the Asset Pipeline has limitations, especially in managing JavaScript dependencies and modern JavaScript tooling.
+
+<aside>
+  Adding external JavaScript dependencies in a Rails application using the Asset Pipeline involved a few more manual steps. The process typically included:
+
+  1. The `vendor/assets/javascripts` directory was commonly used to store external JavaScript libraries or frameworks.
+
+  2. Developers had to manually download the JavaScript file (e.g., a jQuery plugin) or copy it from a source and place it into the `vendor/assets/javascripts` directory. This process was not automated and required manual updating for each new version of the library.
+
+  3. `app/assets/javascripts/application.js` was used to include the external library using Sprockets directives.
+
+  ```
+    // Example of including an external library in application.js
+    //= require jquery
+    //= require bootstrap
+  ```
+</aside>
 
 
-<!-- TODO
-- chnage to alternative bundling approaches? jsbundling, webpacker, etc.
-- sprockets *technically* is transpiling/bundling in a more limited way
-- talk about transpiling (es6 -> es5)
+#### Webpacker
+This led to the introduction of [Webpacker](https://github.com/rails/webpacker) in Rails 5, allowing the integration of modern JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)), tools like [Babel](https://babeljs.io/) for transpiling and [npm](https://www.npmjs.com/) for managing third party libraries.
 
-- The main limitation of sprockets and importmaps is that there is no support for transpiling so you can't use things like Babel, TypeScript, Sass, React JSX format, or Tailwind CSS. 
--->
+<aside>
+  Babel is a JavaScript transpiler that is used to convert ES6 code into backwards-compatible JavaScript code that can be run by older JavaScript engines. It allows web developers to take advantage of the newest features of the language while continuing to support older browsers like Internet Explorer.
+</aside>
 
-### [Bundling](https://github.com/rails/jsbundling-rails)
-[Bundling](https://github.com/rails/jsbundling-rails) refers to the process of compiling and packaging multiple JavaScript files into one or a few files. This approach is efficient and reduces the number of requests a browser makes to load a page.
-<!-- TODO: Talk about tradeoffs? slower development because of compile step, more difficult to configure, etc. -->
-- **Use Case**: Ideal for complex applications that utilize Single Page Application (SPA) JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or need to handle a variety of NPM packages.
-- **How It Works**: Bundling tools like Webpack compile and optimize your JavaScript files during the deployment process, ensuring efficient loading and potentially smaller file sizes.
-- **Identifying Bundling**: Projects using bundling will have the `jsbundling-rails` gem in the `Gemfile` and specific configuration or build scripts for the chosen JavaScript bundler (eg [Webpack](https://github.com/webpack/webpack), [esbuild](https://esbuild.github.io/), etc.).
+<aside>
+  ES6 (also known as ECMAScript 6) is a recent update to the JavaScript programming language. ES6 modules allow you to break your JavaScript into smaller, reusable components. One approach to organize JavaScript in your project is to create separate modules in the `javascript/` directory. Then, export functions, objects, or classes from these modules and import them in `app/javascript/application.js` or any other module where you need them.
 
-<!-- TODO
-- limitations of importmaps and asset pipeline (transpiling)
-- discuss API-only backend with SPA frontend 
-- would this be considered a sub-set of bundling?
-- common at large organizations
--->
+  Example:
+
+  ```javascript
+    // app/custom/hello.js
+    export function sayHello(name) {
+      return `Hello, ${name}!`;
+    }
+
+    // app/javascript/application.js
+    import { sayHello } from './custom/hello';
+
+    console.log(sayHello('Alice'));
+  ```
+</aside>
+
+## Rails 7: Import Maps and Beyond
+
+### The Role of Import Maps
+[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addressed some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`). 
+
+<!-- TODO: stronger example of how import maps works -->
+```javascript
+// Example of how Import Maps improved dependency management
+import { myFunction } from 'my-dependency';
+```
+
+### Alternative Bundling Approaches
+For more complex JavaScript requirements, Rails 7 offers alternative bundling options, catering to applications that use SPA frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or require extensive JavaScript tooling.
+
+<!-- TODO: stronger example of how jsbundling works with React -->
+```javascript
+// Example of a complex JavaScript setup using alternative bundling
+import React from 'react';
+```
+
+### API-only approach
+<!-- TODO -->
 
 ### Choosing the Right Approach
-- Choose [Bundling](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like  [React](https://react.dev/) or [Vue](https://vuejs.org/), or handling numerous [NPM packages](https://www.npmjs.com/).
-- Choose [Importmaps](https://github.com/rails/importmap-rails) for simpler projects that benefit from less configuration and direct browser handling of JavaScript modules.
-<!-- TODO: API-only with SPA -->
-- Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) if your project aligns with the traditional Rails asset management approach, particularly for less complex JavaScript integrations.
+- Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) if your project aligns with the Rails asset management approach, particularly for less complex JavaScript integrations.
+- Choose Alternative Bundling libraries like [jsbundling-rails](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like [React](https://react.dev/) or [Vue](https://vuejs.org/) or extensive JavaScript tooling like [NPM](https://www.npmjs.com/).
 
-Each method - [Bundling](https://github.com/rails/jsbundling-rails), [Importmaps](https://github.com/rails/importmap-rails), and the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) - offers distinct advantages and fits different scenarios in a Rails application. Your choice depends on the specifics of your JavaScript requirements, your preferred development workflow, and the specific needs of your project.
-
-
-<!--
-TODO:
-- add more step by step setup for each example
--->
+<!-- TODO: more step by step setup for each practical example -->
 ## Practical Example: Toggling Text Visibility
 We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage.
 
