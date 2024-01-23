@@ -130,22 +130,124 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
 ## Rails 7: Import Maps and Beyond
 
 ### The Role of Import Maps
-[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) stylesheets) in our `<head>`). 
+[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling. 
 
-<!-- TODO: stronger step by step example of how import maps works -->
-```javascript
-// Example of how Import Maps improved dependency management
-import { myFunction } from 'my-dependency';
+<aside>
+  CDNs (or Content Delivery Networks) store copies of web content on multiple servers across different geographical locations. When a user accesses a web page, the CDN delivers content from the server closest to them, reducing load times.
+</aside>
+
+#### Implementing Import Maps
+
+1. Install
+Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7):
+
+```ruby
+gem 'importmap-rails'
 ```
 
-### Alternative Bundling Approaches
-For more complex JavaScript requirements, Rails 7 offers alternative bundling options, catering to applications that use Single Page Application (SPA) frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)) or require extensive JavaScript tooling.
+And then run the install script:
 
-<!-- TODO: stronger example of how jsbundling works with React -->
+```bash
+$ bin/rails importmap:install
+```
+
+Ensure your layout file `app/views/layouts/application.html.erb` includes the Importmap tags in the `<head>`:
+
+```erb
+<%= javascript_importmap_tags %>
+```
+
+<aside>
+  <!-- TODO: show example of what this renders in the HTML -->
+</aside>
+
+2. Configure
+Define your dependencies in `config/importmap.rb`. For example, to add a library like lodash use the importmap CLI tool:
+
+```bash
+$ bin/importmap pin lodash
+```
+Which will add lodash to `config/importmap.rb`:
+
+```ruby
+# config/importmap.rb
+pin "lodash", to: "https://cdn.skypack.dev/lodash"
+```
+
+3. Using the Dependency
+In your JavaScript files (e.g., `app/javascript/application.js`), you can now import the module:
+
 ```javascript
-// Example of a complex JavaScript setup using alternative bundling
+import _ from 'lodash';
+
+console.log(_.shuffle([1, 2, 3, 4]));
+```
+
+4. Execute
+
+Run your Rails server and the JavaScript code using lodash will work as expected.
+
+### Alternative Bundling with jsbundling-rails
+For more complex JavaScript setups like integrating [React](https://react.dev/), Rails 7 offers tools like `jsbundling-rails`.
+
+1. Setting Up jsbundling-rails with React
+Add the `jsbundling-rails` gem to your Gemfile:
+
+```ruby
+gem 'jsbundling-rails'
+```
+
+Run `bundle install` in your terminal to install the gem.
+
+Ensure your layout file includes the JavaScript pack tag.
+```erb
+<%= javascript_pack_tag 'application', 'data-turbo-track': 'reload' %>
+```
+
+2. Install JavaScript Bundler
+For this example, we'll use Webpack. 
+
+Run:
+
+```sh
+$ bin/rails javascript:install:webpack
+```
+
+3. Add React
+You can add [React](https://react.dev/) and other dependencies via npm or Yarn. For instance:
+
+```sh
+yarn add react react-dom
+```
+
+4. Set Up React
+In your `app/javascript` directory, create a React component `app/javascript/components/HelloReact.jsx`
+
+```jsx
 import React from 'react';
+import ReactDOM from 'react-dom';
+
+function HelloReact() {
+  return <h1>Hello from React</h1>;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <HelloReact />,
+    document.body.appendChild(document.createElement('div')),
+  )
+});
 ```
+
+5. Include in Application Pack
+In your `app/javascript/application.js`, import the React component:
+
+```javascript
+import 'components/HelloReact'
+```
+
+6. Execution
+Start your Rails server and visit the page where the React component should appear.
 
 ### API-only approach
 <!-- TODO -->
