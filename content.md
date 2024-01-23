@@ -130,7 +130,7 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
 ## Rails 7: Import Maps and Beyond
 
 ### The Role of Import Maps
-[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/ stylesheets) in our `<head>`). 
+[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) stylesheets) in our `<head>`). 
 
 <!-- TODO: stronger step by step example of how import maps works -->
 ```javascript
