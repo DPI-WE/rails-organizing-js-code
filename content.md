@@ -5,7 +5,7 @@ In our previous lessons, we've seen how [JavaScript](https://learn.firstdraft.co
 JavaScript's integration in Rails has evolved significantly, adapting to the changing landscape of web development. Let's explore this evolution and its implications on how we manage JavaScript in a Rails application today.
 
 ### Early Days: Inline JavaScript
-Initially, JavaScript in Rails was often embedded directly within HTML using `<script>` tags. This approach was straightforward but quickly became unmanageable as applications grew in complexity.
+Initially, JavaScript in Rails was often embedded directly within HTML using `<script>` tags. This approach is straightforward but quickly becomes unmanageable as applications grow in complexity.
 
 ```html
 <!DOCTYPE html>
@@ -26,27 +26,25 @@ Initially, JavaScript in Rails was often embedded directly within HTML using `<s
 With Rails 3.1, the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) was introduced, addressing the challenges of managing JavaScript. It provides a structured approach to bundling, concatenating, and minifying JavaScript files.
 
 #### Bundling and Concatenation
-The Asset Pipeline combines multiple JavaScript files into a single file, reducing HTTP requests and improving load times.
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) combines multiple JavaScript files into a single file, reducing HTTP requests and improving load times.
 
 #### Caching and Cache-Busting
-The Asset Pipeline also implementes caching strategies. A unique fingerprint (hash) is added to file names (eg `/assets/application-abcdef1234567890.js`), ensuring users always receive the most updated version.
-
-The rendered HTML of the deployed site translates to something like this:
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) also implementes caching strategies. A unique fingerprint is added to file names ensuring users always receive the most updated version. The rendered HTML of the deployed site translates to something like this:
 
 ```html
 <script src="/assets/application-abcdef1234567890.js"></script>
 ```
-This line in the deployed HTML is responsible for loading your application's JavaScript, ensuring users get the latest version of the script as per the current deployment. The rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
+The rendered html version includes a fingerprint "abcdef1234567890". This fingerprint is a hash generated based on the file's content for cache-busting purposes.
 
 #### Minification
-Minification removes unnecessary characters from JavaScript files, reducing file size and speeding up page loads.
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) implements a technique called **minification** to remove unnecessary characters from JavaScript files (spaces, line breaks, etc.), reducing file size and speed up page loads.
 
 <aside>
   There is a convention to add a `min` suffix to minified files. (eg `filename.min.js`)
 </aside>
 
 #### Directory Structure and Sprockets
-The Asset Pipeline standardizes the organization of these assets in `app/assets/`. 
+The [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) standardizes the organization of these assets in `app/assets/`. 
 
 ```
 app/
@@ -57,7 +55,7 @@ app/
     stylesheets/
 ```
 
-[Sprockets](https://github.com/rails/sprockets), a key component of the Pipeline, handled the concatenation and compression of assets. Projects using the Asset Pipeline will have the `sprockets-rails` gem in the `Gemfile`. There is a manifest file at `app/assets/config/manifest.js` that indexes all the assets you want to concatenate and minify. `//=` directives are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
+[Sprockets](https://github.com/rails/sprockets), a key component of the Pipeline, handles the concatenation and compression of assets. Projects using the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) will have the `sprockets-rails` gem in the `Gemfile`. There is a manifest file at `app/assets/config/manifest.js` that indexes all the assets you want to concatenate and minify. `//=` directives are used in `app/assets/config/manifest.js` to include images, stylesheets, and javascript.
 
 ```javascript
 // app/assets/config/manifest.js
@@ -108,7 +106,7 @@ Despite its benefits, the Asset Pipeline has limitations, especially in managing
 This led to the introduction of [Webpacker](https://github.com/rails/webpacker) in Rails 5, allowing the integration of modern JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)), tools like [Babel](https://babeljs.io/) for transpiling and [npm](https://www.npmjs.com/) for managing third party libraries.
 
 <aside>
-  Babel is a JavaScript transpiler that is used to convert ES6 code into backwards-compatible JavaScript code that can be run by older JavaScript engines. It allows web developers to take advantage of the newest features of the language while continuing to support older browsers like Internet Explorer.
+  Babel is a JavaScript transpiler that is used to convert ES6 code into backwards-compatible JavaScript code that can be run by older JavaScript engines. It allows web developers to take advantage of the newest features of JavaScript while still supporting older browsers like Internet Explorer.
 </aside>
 
 <aside>
@@ -132,7 +130,7 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
 ## Rails 7: Import Maps and Beyond
 
 ### The Role of Import Maps
-[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/) in our `<head>`). 
+[Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling (like how we include [Bootstrap](https://getbootstrap.com/) or [Font Awesome](https://fontawesome.com/ stylesheets) in our `<head>`). 
 
 <!-- TODO: stronger step by step example of how import maps works -->
 ```javascript
