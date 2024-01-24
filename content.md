@@ -101,7 +101,7 @@ Despite its benefits, the Asset Pipeline has limitations, especially in managing
 </aside>
 
 
-#### Webpacker
+### Webpacker
 This led to the introduction of [Webpacker](https://github.com/rails/webpacker) in Rails 5, allowing the integration of modern JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)), tools like [Babel](https://babeljs.io/) for transpiling and [npm](https://www.npmjs.com/) for managing third party libraries.
 
 <aside>
@@ -126,7 +126,7 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
   ```
 </aside>
 
-## Import Maps
+### Import Maps
 [Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling. 
 
 <aside>
