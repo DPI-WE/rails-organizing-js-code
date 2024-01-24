@@ -168,7 +168,7 @@ end
 
 Create a `home` view and include an `onclick` handler in the `<button>` and a `.hidden` css class:
 
-```erb
+```html
 <!-- app/views/pages/home.html.erb -->
 
 <style>
@@ -219,23 +219,7 @@ In this code, the `toggleTextVisibility` function will be called when the button
 
 ![](assets/vanilla-js-example-2.gif)
 
-Now that this is working, let's refactor our code a bit for better organization. We can start by moving the JavaScript to `app/javascript/custom/toggle_visibility.js`
-
-```javascript
-// app/javascript/custom/toggle_visibility.js
-function toggleTextVisibility() {
-  const text = document.getElementById('my-hidden-text');
-  text.classList.toggle('hidden');
-}
-```
-And then include it in your `application.js`:
-
-```javascript
-// app/javascript/application.js
-import "custom/toggle_visibility"
-```
-
-Move the CSS for `.hidden` to `app/assets/stylesheets/application.css`:
+Now that this is working, let's refactor our code a bit for better organization. We can start by moving the CSS for `.hidden` to `app/assets/stylesheets/application.css`:
 
 ```css
 /* app/assets/stylesheets/application.css */
@@ -245,25 +229,102 @@ Move the CSS for `.hidden` to `app/assets/stylesheets/application.css`:
 }
 ```
 
-and clean up your `app/views/pages/home.html.erb` view.
+and remove the `<style>` tag from your `app/views/pages/home.html.erb` view.
 
-```erb
+```html
+<!-- app/views/pages/home.html.erb -->
+
 <p id="my-hidden-text" class="hidden">
   This is hidden text.
 </p>
 
+<!-- toggleTextVisibility() will be called when we click the button -->
 <button onclick="toggleTextVisibility()">Toggle Visibility</button>
+
+<script>
+  function toggleTextVisibility() {
+    const text = document.getElementById('my-hidden-text');
+    text.classList.toggle('hidden');
+  }
+</script>
 ```
 
-<!-- TODO: fix -->
-Verify your code is still working as intended.
-
 ### Example 2: The Asset Pipeline with Import Maps and Stimulus.js
+Now let's take advantage of the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) to include a simple JavaScript framework called [Stimulus.js](https://stimulus.hotwired.dev/). Stimulus.js enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
+
+Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7). This will allow us to fetch stimulus at runtime using ES6 import statements.
+
+```ruby
+# Gemfile
+gem 'importmap-rails'
+```
+
+Then run the install script.
+
+```bash
+$ bundle install
+$ bin/rails importmap:install
+```
+
+This will create a `config/importmap.rb` file that will "pin" your `app/javascript/application.js` to the import map.
+
+```ruby
+# Pin npm packages by running ./bin/importmap
+
+pin "application", preload: true
+```
+
+Ensure your layout file includes the `javascript_importmap_tags` in the `<head>`. It should look something like this.
+
+```html
+<!-- app/views/layouts/application.html.erb -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rails Template</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>
+```
+
+Now if you visit the root route of your application it will import your `application.js` in the head using a`<script type="importmap">` tag in the rendered html.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- other head elements -->
+    <script type="importmap" data-turbo-track="reload">{
+      "imports": {
+        "application": "/assets/application-3897b39d0f7fe7e947af9b84a1e1304bb30eb1dadb983104797d0a5e26a08736.js"
+      }
+    }</script>
+    <link rel="modulepreload" href="/assets/application-3897b39d0f7fe7e947af9b84a1e1304bb30eb1dadb983104797d0a5e26a08736.js">
+    <script src="/assets/es-module-shims.min-d89e73202ec09dede55fb74115af9c5f9f2bb965433de1c2446e1faa6dac2470.js" async="async" data-turbo-track="reload"></script>
+    <script type="module">import "application"</script>
+  </head>
+
+  <body>
+    <!-- your html body -->
+  </body>
+</html>
+```
+
+This will allow us to use ES6 imports in our application.
+
+<!-- TODO: show how we can import the js we wrote using ES6 -->
+
 
 <!--
-
-### Part 2: Stimulus.js Approach (with Import Maps)
-Stimulus.js is a JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
 
 #### Step 1: Setting Up Stimulus
 Run the command to install Stimulus, if not already done:
@@ -312,28 +373,6 @@ Update the HTML to use Stimulus:
 
 -->
 
-1. Install
-Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7):
-
-```ruby
-gem 'importmap-rails'
-```
-
-And then run the install script:
-
-```bash
-$ bin/rails importmap:install
-```
-
-Ensure your layout file `app/views/layouts/application.html.erb` includes the Importmap tags in the `<head>`:
-
-```erb
-<%= javascript_importmap_tags %>
-```
-
-<aside>
-  <!-- TODO: show example of what this renders in the HTML -->
-</aside>
 
 2. Configure
 Define your dependencies in `config/importmap.rb`. For example, to add a library like lodash use the importmap CLI tool:
