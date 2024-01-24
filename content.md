@@ -134,16 +134,17 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
 </aside>
 
 ## Practical Example: Toggling Text Visibility
-We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage. We'll implement this same feature using 4 distinct approaches.
+We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage. We'll implement this same feature using 5 distinct approaches.
 
-1. The Asset Pipeline with Vanilla JavaScript
-2. The Asset Pipeline with Import Maps and Stimulus.js
-3. Alternative Bundling with jsbundling-rails, webpack, and React
-4. API-only
+1. "Vanilla" JavaScript
+2. The Asset Pipeline with Import Maps
+3. Stimulus.js
+4. Alternative Bundling with jsbundling-rails, webpack, and React
+5. API-only
 
 Let's start by creating a new repository using the [Rails 7 template](https://github.com/new?template_name=rails-7-template&template_owner=appdev-projects) and name it something like "toggle-text-example" and then open it up in a codespace.
 
-### Example 1: The Asset Pipeline with "Vanilla" JavaScript
+### Example 1: "Vanilla" JavaScript
 <aside>
   "Vanilla" JavaScript means using plain JavaScript without any additional libraries like jQuery.
 </aside>
@@ -249,7 +250,7 @@ and remove the `<style>` tag from your `app/views/pages/home.html.erb` view.
 </script>
 ```
 
-### Example 2: The Asset Pipeline with Import Maps and Stimulus.js
+### Example 2: The Asset Pipeline with Import Maps
 Now let's take advantage of the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) to include a simple JavaScript framework called [Stimulus.js](https://stimulus.hotwired.dev/). Stimulus.js enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
 
 Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7). This will allow us to fetch stimulus at runtime using ES6 import statements.
@@ -319,13 +320,13 @@ Now if you visit the root route of your application it will import your `applica
 </html>
 ```
 
-This will allow us to use ES6 imports in our application.
+This will allow us to use ES6 style imports in our application. Let's refactor that `toggleTextVisibility` function we wrote into it's own file and import it in the `app/javascript/application.js` file.
 
-<!-- TODO: show how we can import the js we wrote using ES6 -->
+<!-- TODO: show how we can import the function we wrote using ES6 and how it's somewhat limited -->
 
 
 <!--
-
+### Example 3: Stimulus.js
 #### Step 1: Setting Up Stimulus
 Run the command to install Stimulus, if not already done:
 
