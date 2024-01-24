@@ -141,32 +141,72 @@ We'll implement a feature where users can toggle the visibility of a paragraph o
 3. Alternative Bundling with jsbundling-rails, webpack, and React
 4. API-only
 
-Let's start by creating a new repository using the [Rails 7 template](https://github.com/new?template_name=rails-7-template&template_owner=appdev-projects) and name it something like "toggle-text-example".
+Let's start by creating a new repository using the [Rails 7 template](https://github.com/new?template_name=rails-7-template&template_owner=appdev-projects) and name it something like "toggle-text-example" and then open it up in a codespace.
 
 ### Example 1: The Asset Pipeline with "Vanilla" JavaScript
 <aside>
   "Vanilla" JavaScript means using plain JavaScript without any additional libraries like jQuery.
 </aside>
-Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML.
 
-#### Step 1: Creating the View
-Create a view `app/views/pages/home.html.erb` and include an `onclick` handler in the `<button>`:
+Let's create a `PagesController` with a `home` action and view then set that action to the root route.
+
+```ruby
+# app/controllers/pages_controller.rb
+class PagesController < ApplicationController
+
+  def home; end
+
+end
+```
+
+```ruby
+# config/routes.rb
+Rails.application.routes.draw do
+  root "pages#home"
+end
+```
+
+Create a `home` view and include an `onclick` handler in the `<button>` and a `.hidden` css class:
 
 ```erb
 <!-- app/views/pages/home.html.erb -->
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+
 <p id="my-hidden-text" class="hidden">
   This is hidden text.
 </p>
 
-<button onclick="toggleTextVisibility()">Toggle Visibility</button>
+<button>Toggle Visibility</button>
 ```
-In this code, the `toggleTextVisibility` function will be called when the button is clicked.
 
-#### Step 2: Adding JavaScript
-Define the `toggleTextVisibility` function in a `<script>` tag within the HTML file or in a separate JavaScript file:
+If we run `rails server` in the terminal and visit our root route we should see our button.
+
+![](assets/vanilla-js-example-1.png)
+
+
+However, when we click the button, nothing happens. Now we need to add javascript functionality to this button. Define the `toggleTextVisibility` function in a `<script>` tag within the HTML file. Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML. 
 
 ```html
-<!-- Directly in the HTML file -->
+<!-- app/views/pages/home.html.erb -->
+
+<style>
+  .hidden {
+    display: none;
+  }
+</style>
+
+<p id="my-hidden-text" class="hidden">
+  This is hidden text.
+</p>
+
+<!-- toggleTextVisibility() will be called when we click the button -->
+<button onclick="toggleTextVisibility()">Toggle Visibility</button>
+
 <script>
   function toggleTextVisibility() {
     const text = document.getElementById('my-hidden-text');
@@ -174,7 +214,12 @@ Define the `toggleTextVisibility` function in a `<script>` tag within the HTML f
   }
 </script>
 ```
-Even better, keep the JavaScript separate:
+
+In this code, the `toggleTextVisibility` function will be called when the button is clicked.
+
+![](assets/vanilla-js-example-2.gif)
+
+Now that this is working, let's refactor our code a bit for better organization. We can start by moving the JavaScript to `app/javascript/custom/toggle_visibility.js`
 
 ```javascript
 // app/javascript/custom/toggle_visibility.js
@@ -187,11 +232,10 @@ And then include it in your `application.js`:
 
 ```javascript
 // app/javascript/application.js
-import "../custom/toggle_visibility"
+import "custom/toggle_visibility"
 ```
 
-#### Step 3: CSS
-Add the CSS for `.hidden`:
+Move the CSS for `.hidden` to `app/assets/stylesheets/application.css`:
 
 ```css
 /* app/assets/stylesheets/application.css */
@@ -200,6 +244,19 @@ Add the CSS for `.hidden`:
   display: none;
 }
 ```
+
+and clean up your `app/views/pages/home.html.erb` view.
+
+```erb
+<p id="my-hidden-text" class="hidden">
+  This is hidden text.
+</p>
+
+<button onclick="toggleTextVisibility()">Toggle Visibility</button>
+```
+
+<!-- TODO: fix -->
+Verify your code is still working as intended.
 
 ### Example 2: The Asset Pipeline with Import Maps and Stimulus.js
 
