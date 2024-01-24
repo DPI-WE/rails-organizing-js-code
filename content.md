@@ -141,9 +141,11 @@ We'll implement a feature where users can toggle the visibility of a paragraph o
 3. Alternative Bundling with jsbundling-rails, webpack, and React
 4. API-only
 
-### Example 1: "Vanilla" JavaScript Approach with Asset Pipeline
+Let's start by creating a new repository using the [Rails 7 template](https://github.com/new?template_name=rails-7-template&template_owner=appdev-projects) and name it something like "toggle-text-example".
+
+### Example 1: The Asset Pipeline with "Vanilla" JavaScript
 <aside>
-  <!-- TODO: add definition of vanilla js -->
+  "Vanilla" JavaScript means using plain JavaScript without any additional libraries like jQuery.
 </aside>
 Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML.
 
@@ -327,6 +329,10 @@ Run:
 ```sh
 $ bin/rails javascript:install:webpack
 ```
+
+<aside>
+  [Webpacker](https://github.com/rails/webpacker) is a wrapper gem for integrating [Webpack](https://webpack.js.org/) with Rails applications. There are also alternative bundling libraries like [esbuild](https://esbuild.github.io/) that offer similar functionalities.
+</aside>
 
 3. Add React
 You can add [React](https://react.dev/) and other dependencies via npm or Yarn. For instance:
