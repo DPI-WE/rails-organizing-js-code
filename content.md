@@ -126,16 +126,132 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
   ```
 </aside>
 
-## Rails 7: Import Maps and Beyond
-
-### The Role of Import Maps
+## Import Maps
 [Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling. 
 
 <aside>
   **CDNs** (or Content Delivery Networks) store copies of web content on multiple servers across different geographical locations. When a user accesses a web page, the CDN delivers content from the server closest to them, reducing load times.
 </aside>
 
-#### Implementing Import Maps
+## Practical Example: Toggling Text Visibility
+We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage. We'll implement this same feature using 4 distinct approaches.
+
+1. The Asset Pipeline with Vanilla JavaScript
+2. The Asset Pipeline with Import Maps and Stimulus.js
+3. Alternative Bundling with jsbundling-rails, webpack, and React
+4. API-only
+
+### Example 1: "Vanilla" JavaScript Approach with Asset Pipeline
+<aside>
+  <!-- TODO: add definition of vanilla js -->
+</aside>
+Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML.
+
+#### Step 1: Creating the View
+Create a view `app/views/pages/home.html.erb` and include an `onclick` handler in the `<button>`:
+
+```erb
+<!-- app/views/pages/home.html.erb -->
+<p id="my-hidden-text" class="hidden">
+  This is hidden text.
+</p>
+
+<button onclick="toggleTextVisibility()">Toggle Visibility</button>
+```
+In this code, the `toggleTextVisibility` function will be called when the button is clicked.
+
+#### Step 2: Adding JavaScript
+Define the `toggleTextVisibility` function in a `<script>` tag within the HTML file or in a separate JavaScript file:
+
+```html
+<!-- Directly in the HTML file -->
+<script>
+  function toggleTextVisibility() {
+    const text = document.getElementById('my-hidden-text');
+    text.classList.toggle('hidden');
+  }
+</script>
+```
+Even better, keep the JavaScript separate:
+
+```javascript
+// app/javascript/custom/toggle_visibility.js
+function toggleTextVisibility() {
+  const text = document.getElementById('my-hidden-text');
+  text.classList.toggle('hidden');
+}
+```
+And then include it in your `application.js`:
+
+```javascript
+// app/javascript/application.js
+import "../custom/toggle_visibility"
+```
+
+#### Step 3: CSS
+Add the CSS for `.hidden`:
+
+```css
+/* app/assets/stylesheets/application.css */
+
+.hidden {
+  display: none;
+}
+```
+
+### Example 2: The Asset Pipeline with Import Maps and Stimulus.js
+
+<!--
+
+### Part 2: Stimulus.js Approach (with Import Maps)
+Stimulus.js is a JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
+
+#### Step 1: Setting Up Stimulus
+Run the command to install Stimulus, if not already done:
+
+1. Add the `stimulus-rails` gem to your `Gemfile`: `gem 'stimulus-rails'`
+2. Run `./bin/bundle install`.
+3. Run `./bin/rails stimulus:install`
+
+#### Step 2: Creating a Stimulus Controller
+Generate a Stimulus controller:
+
+```bash
+./bin/rails generate stimulus toggle
+```
+
+Edit the controller:
+
+```javascript
+// app/javascript/controllers/toggle_hidden_controller.js
+
+import { Controller } from "stimulus";
+
+export default class extends Controller {
+  static targets = ["text"]
+
+  toggle() {
+    this.textTarget.classList.toggle('hidden');
+  }
+}
+```
+
+#### Step 3: Adjusting the View
+Update the HTML to use Stimulus:
+
+`app/views/pages/home.html.erb`
+```erb
+
+<div data-controller="toggle-hidden">
+  <p data-toggle-hidden-target="text" class="hidden">
+    This is hidden text.
+  </p>
+
+  <button data-action="click->toggle#toggle">Toggle Visibility</button>
+</div>
+```
+
+-->
 
 1. Install
 Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7):
@@ -186,7 +302,7 @@ console.log(_.shuffle([1, 2, 3, 4]));
 
 Run your Rails server and the JavaScript code using lodash will work as expected.
 
-### Alternative Bundling with jsbundling-rails
+### Example 3: Alternative Bundling with jsbundling-rails, webpack, and React
 For more complex JavaScript setups like integrating [React](https://react.dev/), Rails 7 offers tools like `jsbundling-rails`.
 
 1. Setting Up jsbundling-rails with React
@@ -248,128 +364,16 @@ import 'components/HelloReact'
 6. Execution
 Start your Rails server and visit the page where the React component should appear.
 
-### API-only approach
+### Example 4: API-only approach
 <!-- TODO -->
 
 ### Choosing the Right Approach
+<!-- Traditional approach for vanilla js -->
 - Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) if your project aligns with the Rails asset management approach, particularly for less complex JavaScript integrations.
 - Choose Alternative Bundling libraries like [jsbundling-rails](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like [React](https://react.dev/) or [Vue](https://vuejs.org/) or extensive JavaScript tooling like [NPM](https://www.npmjs.com/).
 <!-- Choose API-only approach if... -->
 
-<!-- TODO: more step by step setup for each practical example -->
-## Practical Example: Toggling Text Visibility
-We'll implement a feature where users can toggle the visibility of a paragraph of text on a webpage.
-
-### Part 1: "Vanilla" JavaScript Approach (with Asset Pipeline)
-Using the `onclick` attribute, we can directly attach a click event handler to the button in our HTML.
-
-#### Step 1: Creating the View
-Create a view `app/views/pages/home.html.erb` and include an `onclick` handler in the `<button>`:
-
-```erb
-<!-- app/views/pages/home.html.erb -->
-<p id="my-hidden-text" class="hidden">
-  This is hidden text.
-</p>
-
-<button onclick="toggleTextVisibility()">Toggle Visibility</button>
-```
-In this code, the `toggleTextVisibility` function will be called when the button is clicked.
-
-#### Step 2: Adding JavaScript
-Define the `toggleTextVisibility` function in a `<script>` tag within the HTML file or in a separate JavaScript file:
-
-```html
-<!-- Directly in the HTML file -->
-<script>
-  function toggleTextVisibility() {
-    const text = document.getElementById('my-hidden-text');
-    text.classList.toggle('hidden');
-  }
-</script>
-```
-Even better, keep the JavaScript separate:
-
-```javascript
-// app/javascript/custom/toggle_visibility.js
-function toggleTextVisibility() {
-  const text = document.getElementById('my-hidden-text');
-  text.classList.toggle('hidden');
-}
-```
-And then include it in your `application.js`:
-
-```javascript
-// app/javascript/application.js
-import "../custom/toggle_visibility"
-```
-
-#### Step 3: CSS
-Add the CSS for `.hidden`:
-
-```css
-/* app/assets/stylesheets/application.css */
-
-.hidden {
-  display: none;
-}
-```
-
-<!-- TODO: add conclusion and a gif of the app -->
-
-### Part 2: Stimulus.js Approach (with Import Maps)
-Stimulus.js is a JavaScript framework designed for Rails applications. It enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
-
-#### Step 1: Setting Up Stimulus
-Run the command to install Stimulus, if not already done:
-
-1. Add the `stimulus-rails` gem to your `Gemfile`: `gem 'stimulus-rails'`
-2. Run `./bin/bundle install`.
-3. Run `./bin/rails stimulus:install`
-
-#### Step 2: Creating a Stimulus Controller
-Generate a Stimulus controller:
-
-```bash
-./bin/rails generate stimulus toggle
-```
-
-Edit the controller:
-
-```javascript
-// app/javascript/controllers/toggle_hidden_controller.js
-
-import { Controller } from "stimulus";
-
-export default class extends Controller {
-  static targets = ["text"]
-
-  toggle() {
-    this.textTarget.classList.toggle('hidden');
-  }
-}
-```
-
-#### Step 3: Adjusting the View
-Update the HTML to use Stimulus:
-
-```erb
-<!-- app/views/pages/home.html.erb -->
-
-<div data-controller="toggle-hidden">
-  <p data-toggle-hidden-target="text" class="hidden">
-    This is hidden text.
-  </p>
-
-  <button data-action="click->toggle#toggle">Toggle Visibility</button>
-</div>
-```
-
-<!-- 
-TODO:
-- add a React.js example?
-- add a API-only example?
--->
+<!-- TODO: add a gif/image of the app -->
 
 ## Resources
 
@@ -378,4 +382,4 @@ TODO:
 - [Stimulus](https://stimulus.hotwired.dev/)
 
 ## Conclusion
-In this lesson, you've learned two different ways to add interactive features to your Rails application. The vanilla JavaScript approach offers direct control over the DOM, while [Stimulus](https://stimulus.hotwired.dev/) provides a more structured and Rails-integrated method. Understanding both allows you to choose the right tool for your project's needs.
+In this lesson, you've learned 4 different ways to add JavaScript to your Rails application. Understanding these different approaches allows you to choose the right tool for your project's needs.
