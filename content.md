@@ -95,7 +95,6 @@ Despite its benefits, the Asset Pipeline has limitations, especially in managing
   3. `app/assets/config/manifest.js` was used to include the external library using [Sprockets](https://github.com/rails/sprockets) directives.
 
   ```
-    // Example of including an external library in app/assets/config/manifest.js
     //= require jquery
     //= require bootstrap
   ```
@@ -106,11 +105,11 @@ Despite its benefits, the Asset Pipeline has limitations, especially in managing
 This led to the introduction of [Webpacker](https://github.com/rails/webpacker) in Rails 5, allowing the integration of modern JavaScript frameworks (like [React](https://react.dev/) or [Vue](https://vuejs.org/)), tools like [Babel](https://babeljs.io/) for transpiling and [npm](https://www.npmjs.com/) for managing third party libraries.
 
 <aside>
-  Babel is a JavaScript transpiler that is used to convert ES6 code into backwards-compatible JavaScript code that can be run by older JavaScript engines. It allows web developers to take advantage of the newest features of JavaScript while still supporting older browsers like Internet Explorer.
+  [Babel](https://babeljs.io/) is a JavaScript transpiler that is used to convert ES6 code into backwards-compatible JavaScript code that can be run by older JavaScript engines. It allows web developers to take advantage of the newest features of JavaScript while still supporting older browsers like Internet Explorer.
 </aside>
 
 <aside>
-  ES6 (also known as ECMAScript 6) is a recent update to the JavaScript programming language. ES6 modules allow you to break your JavaScript into smaller, reusable components. One approach to organize JavaScript in your project is to create separate modules in the `javascript/` directory. Then, export functions, objects, or classes from these modules and import them in `app/javascript/application.js` or any other module where you need them.
+  **ES6** (also known as ECMAScript 6) is a recent update to the JavaScript programming language. ES6 modules allow you to break your JavaScript into smaller, reusable components. One approach to organize JavaScript in your project is to create separate modules in the `javascript/` directory. Then, export functions, objects, or classes from these modules and import them in `app/javascript/application.js` or any other module where you need them.
 
   Example:
 
@@ -133,7 +132,7 @@ This led to the introduction of [Webpacker](https://github.com/rails/webpacker) 
 [Import Maps](https://github.com/rails/importmap-rails) in Rails 7 addresses some of the Asset Pipeline's limitations by simplifying the inclusion of JavaScript dependencies. It leverages modern browser capabilities to load JavaScript modules directly from the browser at runtime (loading them from a CDN), without the need for compilation or bundling. 
 
 <aside>
-  CDNs (or Content Delivery Networks) store copies of web content on multiple servers across different geographical locations. When a user accesses a web page, the CDN delivers content from the server closest to them, reducing load times.
+  **CDNs** (or Content Delivery Networks) store copies of web content on multiple servers across different geographical locations. When a user accesses a web page, the CDN delivers content from the server closest to them, reducing load times.
 </aside>
 
 #### Implementing Import Maps
