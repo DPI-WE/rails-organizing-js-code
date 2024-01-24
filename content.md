@@ -320,25 +320,63 @@ Now if you visit the root route of your application it will import your `applica
 </html>
 ```
 
-This will allow us to use ES6 style imports in our application. Let's refactor that `toggleTextVisibility` function we wrote into it's own file and import it in the `app/javascript/application.js` file.
+This will allow us to use ES6 style imports in our application. Let's refactor that `toggleTextVisibility` function we wrote into it's own file and import it in the `app/javascript/application.js` file. Create a file for the function.
 
-<!-- TODO: show how we can import the function we wrote using ES6 and how it's somewhat limited -->
+```javascript
+// app/javascript/custom/toggle_visibility.js
+export function toggleTextVisibility() {
+  const text = document.getElementById('my-hidden-text');
+  text.classList.toggle('hidden');
+}
+```
+Then import this function in `application.js` and attach to the `window` so we can access it in the view.
 
+```javascript
+import { toggleTextVisibility } from "./custom/toggle_visibility";
+
+document.addEventListener('DOMContentLoaded', () => {
+  // attach it to window
+  window.toggleTextVisibility = toggleTextVisibility;
+});
+```
+
+Now we can remove the `<script>` tag from our view.
+
+```html
+<!-- app/views/pages/home.html.erb -->
+<p id="my-hidden-text" class="hidden">
+  This is hidden text.
+</p>
+
+<button onclick="toggleTextVisibility()">Toggle Visibility</button>
+```
+
+### Example 3: Stimulus.js
+Instead of directly attaching event handlers in your HTML (like `onclick` attributes) or globally exposing functions (like how we attached the function to the window during the `DOMContentLoaded` event), Stimulus allows you to declare how HTML elements should interact with JavaScript more declaratively via html attributes and controller objects. Let's refactor our toggle visibility functionality using [Stimulus.js](https://stimulus.hotwired.dev/).
+#### Step 1: Setting Up Stimulus
+
+Run the command to install Stimulus.
+
+Add the `stimulus-rails` gem to your `Gemfile`. 
+```ruby
+# Gemfile
+gem 'stimulus-rails'
+```
+
+And then install Stimulus.
+
+```bash
+$ bundle install
+$ rails stimulus:install
+```
 
 <!--
-### Example 3: Stimulus.js
-#### Step 1: Setting Up Stimulus
-Run the command to install Stimulus, if not already done:
-
-1. Add the `stimulus-rails` gem to your `Gemfile`: `gem 'stimulus-rails'`
-2. Run `./bin/bundle install`.
-3. Run `./bin/rails stimulus:install`
 
 #### Step 2: Creating a Stimulus Controller
 Generate a Stimulus controller:
 
 ```bash
-./bin/rails generate stimulus toggle
+./bin/rails generate stimulus toggle_hidden
 ```
 
 Edit the controller:
@@ -372,7 +410,6 @@ Update the HTML to use Stimulus:
 </div>
 ```
 
--->
 
 
 2. Configure
@@ -401,7 +438,9 @@ console.log(_.shuffle([1, 2, 3, 4]));
 
 Run your Rails server and the JavaScript code using lodash will work as expected.
 
-### Example 3: Alternative Bundling with jsbundling-rails, webpack, and React
+-->
+
+### Example 4: Alternative Bundling with jsbundling-rails, webpack, and React
 For more complex JavaScript setups like integrating [React](https://react.dev/), Rails 7 offers tools like `jsbundling-rails`.
 
 1. Setting Up jsbundling-rails with React
@@ -467,7 +506,7 @@ import 'components/HelloReact'
 6. Execution
 Start your Rails server and visit the page where the React component should appear.
 
-### Example 4: API-only approach
+### Example 5: API-only approach
 <!-- TODO -->
 
 ### Choosing the Right Approach
