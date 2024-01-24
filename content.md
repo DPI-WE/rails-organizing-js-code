@@ -220,7 +220,7 @@ In this code, the `toggleTextVisibility` function will be called when the button
 
 ![](assets/vanilla-js-example-2.gif)
 
-Now that this is working, let's refactor our code a bit for better organization. We can start by moving the CSS for `.hidden` to `app/assets/stylesheets/application.css`:
+Now that this is working, let's refactor our code a bit for better organization. We can start by moving the CSS for `.hidden` to `app/assets/stylesheets/application.css`. Make sure you have `<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>` in `app/views/layouts/application.html.erb` so it is compiled through the asset pipeline.
 
 ```css
 /* app/assets/stylesheets/application.css */
