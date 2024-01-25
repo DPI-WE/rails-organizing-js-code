@@ -389,11 +389,8 @@ Now we can remove the `<script>` tag from our view.
 ### Example 3: Stimulus.js
 Instead of directly attaching event handlers in your HTML (like `onclick` attributes) or globally exposing functions (like how we attached the function to the window during the `DOMContentLoaded` event), [Stimulus.js](https://stimulus.hotwired.dev/) enhances HTML by connecting elements to JavaScript objects via data attributes, making the code more organized and maintainable. Let's refactor our toggle visibility functionality using [Stimulus.js](https://stimulus.hotwired.dev/).
 
-#### Step 1: Setting Up Stimulus
+Add the `stimulus-rails` gem to your `Gemfile`.
 
-Run the command to install Stimulus.
-
-Add the `stimulus-rails` gem to your `Gemfile`. 
 ```ruby
 # Gemfile
 gem 'stimulus-rails'
