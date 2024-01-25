@@ -494,6 +494,7 @@ We can now remove the "Vanilla" JavaScript code we wrote and safely delete the `
 ```javascript
 // app/javascript/application.js
 
+// This is available because we called `pin_all_from "app/javascript/controllers", under: "controllers"` in the importmap.rb
 import "controllers"
 ```
 
@@ -503,26 +504,17 @@ Run your Rails server and the toggle visibility button should work exactly as be
 
 <!-- TODO: verify this works as expected -->
 ### Example 4: Alternative Bundling with jsbundling-rails, webpack, and React
-For more complex JavaScript setups like integrating [React](https://react.dev/), Rails 7 offers tools like `jsbundling-rails`.
+For more complex JavaScript setups like integrating [React](https://react.dev/), [TypeScript](), or other transpiling dependent technologies; Rails 7 offers tools like `jsbundling-rails`. Let's rebuild our `toggle_hidden.js` Stimulus controller into a React component to demonstrate this alternative bundling approach.
 
-1. Setting Up jsbundling-rails with React
-Add the `jsbundling-rails` gem to your Gemfile:
+Add the `jsbundling-rails` gem to your `Gemfile` and run `bundle install` in your terminal to install the gem.
 
 ```ruby
 gem 'jsbundling-rails'
 ```
 
-Run `bundle install` in your terminal to install the gem.
 
-Ensure your layout file includes the JavaScript pack tag.
-```erb
-<%= javascript_pack_tag 'application', 'data-turbo-track': 'reload' %>
-```
 
-2. Install JavaScript Bundler
-For this example, we'll use Webpack. 
-
-Run:
+Then we'll install a bundler. For this example, we'll use Webpack. 
 
 ```sh
 $ bin/rails javascript:install:webpack
@@ -532,41 +524,110 @@ $ bin/rails javascript:install:webpack
   [Webpacker](https://github.com/rails/webpacker) is a wrapper gem for integrating [Webpack](https://webpack.js.org/) with Rails applications. There are also alternative bundling libraries like [esbuild](https://esbuild.github.io/) that offer similar functionalities.
 </aside>
 
-3. Add React
-You can add [React](https://react.dev/) and other dependencies via npm or Yarn. For instance:
+This will add a `javascript_include_tag` in the `application.html.erb` layout file. Make sure to remove `javascript_importmap_tags` since we are no longer using Import Maps.
+
+```erb
+<!-- app/views/layout/application.html.erb -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rails Template</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>
+```
+
+Which will render in our html like this.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    ...
+    <script src="/assets/application-5bd6a815d7a412d9ceabf13a64dd6ab12e3d0f9fb68c9ec4605cf8dd5b75b754.js" data-turbo-track="reload" type="module"></script>
+    ...
+  </head>
+
+  <body>
+    ...
+  </body>
+</html>
+```
+
+Now that we've removed Import Maps and added Webpack, if we want to add JavaScript packages we'll use [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) and they'll be added to `package.json` (which is similar to a Gemfile for JavaScript packages).
+
+```json
+// package.json
+{
+  "name": "app",
+  "private": true,
+  "dependencies": {
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  }
+}
+```
+
+Now let's add [React](https://react.dev/) using Yarn. 
 
 ```sh
 yarn add react react-dom
 ```
 
-4. Set Up React
-In your `app/javascript` directory, create a React component `app/javascript/components/HelloReact.jsx`
+This command will add `react` and `react-dom` to the `package.json`dependencies. In the `app/javascript` directory, we'll create a React component `app/javascript/components/ToggleVisibility.js`
 
 ```jsx
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState } from 'react';
 
-function HelloReact() {
-  return <h1>Hello from React</h1>;
-}
+const ToggleVisibility = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
+
+  return (
+    <div>
+      {isVisible && <p>This is hidden text.</p>}
+      <button onClick={toggleVisibility}>
+        Toggle Visibility
+      </button>
+    </div>
+  );
+};
+
+export default ToggleVisibility;
+```
+
+Then in your `app/javascript/application.js`, import the React component.
+
+```javascript
+import ToggleVisibility from "./components/ToggleVisibility";
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
-    <HelloReact />,
-    document.body.appendChild(document.createElement('div')),
+    <ToggleVisibility />,
+    document.body.appendChild(document.createElement('div'))
   )
 });
 ```
 
-5. Include in Application Pack
-In your `app/javascript/application.js`, import the React component:
+<!-- TODO: update the view -->
 
-```javascript
-import 'components/HelloReact'
-```
-
-6. Execution
-Start your Rails server and visit the page where the React component should appear.
+Start your Rails server and visit the page where the React component should appear. It should work exactly as before, but now with React and Webpack.
 
 ### Example 5: API-only approach
 Another common approach you will encounter is a totally decoupled backend and frontend. In an API-only application, Rails is used primarily as a backend service that provides a API (usually JSON). This API is consumed by a frontend application (like a React app). The React application handles the user interface and interacts with the API over HTTP.
