@@ -139,7 +139,7 @@ We'll implement a feature where users can toggle the visibility of a paragraph o
 1. "Vanilla" JavaScript
 2. The Asset Pipeline with Import Maps
 3. Stimulus.js
-4. Alternative Bundling with jsbundling-rails, webpack, and React
+4. Alternative Bundling with jsbundling-rails, esbuild, and React
 5. API-only
 
 Let's start by creating a new repository using the [Rails 7 template](https://github.com/new?template_name=rails-7-template&template_owner=appdev-projects) and name it something like "toggle-text-example" and then open it up in a codespace.
@@ -503,7 +503,7 @@ import "controllers"
 Run your Rails server and the toggle visibility button should work exactly as before.
 
 <!-- TODO: verify this works as expected -->
-### Example 4: Alternative Bundling with jsbundling-rails, webpack, and React
+### Example 4: Alternative Bundling with jsbundling-rails, esbuild, and React
 For more complex JavaScript setups like integrating [React](https://react.dev/), [TypeScript](), or other transpiling dependent technologies; Rails 7 offers tools like `jsbundling-rails`. Let's rebuild our `toggle_hidden.js` Stimulus controller into a React component to demonstrate this alternative bundling approach.
 
 Add the `jsbundling-rails` gem to your `Gemfile` and run `bundle install` in your terminal to install the gem.
@@ -512,19 +512,17 @@ Add the `jsbundling-rails` gem to your `Gemfile` and run `bundle install` in you
 gem 'jsbundling-rails'
 ```
 
-
-
-Then we'll install a bundler. For this example, we'll use Webpack. 
+Then we'll install a bundler. For this example, we'll use esbuild. 
 
 ```sh
-$ bin/rails javascript:install:webpack
+$ bin/rails javascript:install:esbuild
 ```
 
 <aside>
-  [Webpacker](https://github.com/rails/webpacker) is a wrapper gem for integrating [Webpack](https://webpack.js.org/) with Rails applications. There are also alternative bundling libraries like [esbuild](https://esbuild.github.io/) that offer similar functionalities.
+  [esbuild](https://esbuild.github.io/) is a javascript application bundling tool. There are also other bundling libraries like [webpack](https://webpack.js.org/) that offer similar functionality.
 </aside>
 
-This will add a `javascript_include_tag` in the `application.html.erb` layout file. Make sure to remove `javascript_importmap_tags` since we are no longer using Import Maps.
+This will add a `javascript_include_tag` in the `application.html.erb` layout file. Make sure to remove `javascript_importmap_tags`, `config/importmap.rb`, "importmap-rails" gem, and our Stimulus controllers since we are no longer using Import Maps or Stimulus. Our application layout file should look like this.
 
 ```erb
 <!-- app/views/layout/application.html.erb -->
@@ -564,7 +562,7 @@ Which will render in our html like this.
 </html>
 ```
 
-Now that we've removed Import Maps and added Webpack, if we want to add JavaScript packages we'll use [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) and they'll be added to `package.json` (which is similar to a Gemfile for JavaScript packages).
+Now that we've removed Import Maps and added esbuild, we'll use [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) for bundling our javascript. You can manage your javascript dependencies in `package.json` (which is similar to a Gemfile for JavaScript packages). We'll use the "build" command to bundle our `application.js` file. 
 
 ```json
 // package.json
@@ -572,13 +570,22 @@ Now that we've removed Import Maps and added Webpack, if we want to add JavaScri
   "name": "app",
   "private": true,
   "dependencies": {
-    "webpack": "^5.90.0",
-    "webpack-cli": "^5.1.4"
+    "esbuild": "^0.19.12"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --loader:.js=jsx"
   }
 }
+```
+
+We can use `yarn build --watch` to automatically rebuild the javascript anytime you make changes. These builds will be added to the `app/assets/builds` folder. Make sure to remove the old javascript directives in the sprockets manifest.
+
+```javascript
+// app/assets/config/manifest.js
+
+//= link_tree ../images
+//= link_directory ../stylesheets .css
+//= link_tree ../builds
 ```
 
 Now let's add [React](https://react.dev/) using Yarn. 
@@ -587,10 +594,12 @@ Now let's add [React](https://react.dev/) using Yarn.
 yarn add react react-dom
 ```
 
-This command will add `react` and `react-dom` to the `package.json`dependencies. In the `app/javascript` directory, we'll create a React component `app/javascript/components/ToggleVisibility.js`
+This command will add `react` and `react-dom` to the `package.json`dependencies. Make sure to add `--loader:.js=jsx` to our `package.json` "build" script. This will allow us to build the .jsx files used in React.
+
+Let's create a React component `app/javascript/components/ToggleVisibility.js`
 
 ```jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 const ToggleVisibility = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -615,23 +624,31 @@ export default ToggleVisibility;
 Then in your `app/javascript/application.js`, import the React component.
 
 ```javascript
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
 import ToggleVisibility from "./components/ToggleVisibility";
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <ToggleVisibility />,
-    document.body.appendChild(document.createElement('div'))
-  )
+  const root = ReactDOM.createRoot(document.getElementById('home'));
+  root.render(<ToggleVisibility />)
 });
 ```
 
-<!-- TODO: update the view -->
+We'll also need to update our `home` view file to add an id for the React app to attach to.
 
-Start your Rails server and visit the page where the React component should appear. It should work exactly as before, but now with React and Webpack.
+```html
+<!-- app/views/pages/home.html.erb -->
+
+<div id="home" />
+```
+
+Start your Rails server in a terminal `bin/rails server` and your yarn build in another terminal `yarn build --watch`. Visit the home page and your React component should appear. It should work exactly as before, but now with `React` and `esbuild`.
+
+![](assets/vanilla-js-example-2.gif)
 
 ### Example 5: API-only approach
-Another common approach you will encounter is a totally decoupled backend and frontend. In an API-only application, Rails is used primarily as a backend service that provides a API (usually JSON). This API is consumed by a frontend application (like a React app). The React application handles the user interface and interacts with the API over HTTP.
-This separation allows for more flexibility in development and deployment, and it can lead to better performance and scalability. However, it also involves more complexity in terms of setup, development, and maintenance, as you are essentially managing two separate applications.
+Another common approach you will encounter is a totally decoupled backend and frontend. In an API-only application, Rails is used primarily as a backend service that provides an API (usually JSON). This API is consumed by a frontend application (like a React app). The React application handles the user interface and interacts with the API over HTTP.
+This separation allows for more flexibility in development and deployment, and it can lead to better performance and scalability. However, it also adds more complexity in terms of setup, development, deployment and maintenance, as you are essentially managing two separate applications.
 
 ### Choosing the Right Approach
 - Choose the "Vanilla" JavaScript approach if your application only requires a few "sprinkles" of JavaScript here and there.
@@ -640,10 +657,11 @@ This separation allows for more flexibility in development and deployment, and i
 - Choose an API-only Rails backend with an SPA frontend if your project requires a high level of interactivity, has distinct frontend and backend development teams, or needs the flexibility to adapt to changing frontend technologies. 
 
 ## Resources
-
 - [The Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)
 - [Working with JavaScript in Rails](https://guides.rubyonrails.org/working_with_javascript_in_rails.html)
 - [Stimulus.js](https://stimulus.hotwired.dev/)
+- [React](https://react.dev/)
+- [Setting up Rails 7 for typescript and React](https://www.typescriptbites.io/articles/setting-up-rails-7-for-typescript-and-react)
 
 ## Conclusion
 In this lesson, you've learned 5 different ways to add JavaScript to your Rails application. Understanding these different architectures allows you to choose the right approach given your project's requirements.
