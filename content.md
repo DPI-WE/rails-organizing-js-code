@@ -22,7 +22,7 @@ Initially, JavaScript in Rails was often embedded directly within HTML using `<s
 </html>
 ```
 
-![](./assets/js-alert.gif)
+![](assets/js-alert.gif)
 
 ### The Asset Pipeline Era
 With Rails 3.1, the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) was introduced, addressing the challenges of managing JavaScript. It provides a structured approach to bundling, concatenating, and minifying JavaScript files.
