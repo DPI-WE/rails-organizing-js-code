@@ -220,7 +220,42 @@ In this code, the `toggleTextVisibility` function will be called when the button
 
 ![](assets/vanilla-js-example-2.gif)
 
-Now that this is working, let's refactor our code a bit for better organization. We can start by moving the CSS for `.hidden` to `app/assets/stylesheets/application.css`. Make sure you have `<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>` in `app/views/layouts/application.html.erb` so it is compiled through the asset pipeline.
+Now that this is working, let's refactor our code a bit for better organization. Make sure you have `<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>` in `app/views/layouts/application.html.erb` so it is compiled through the asset pipeline.
+
+```erb
+<!-- app/views/layouts/application.html.erb -->
+<!DOCTYPE html>
+<html>
+  <head>
+    ...
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    ...
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>
+```
+
+Which renders to something like this.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    ...
+    <link rel="stylesheet" href="/assets/application-666b940ccd89946066e3be0d5db5822ee6678c304a9a3a4b5c5c2fecbf54093b.css" data-turbo-track="reload" />
+    ...
+  </head>
+
+  <body>
+    ...
+  </body>
+</html>
+```
+
+Now we can move the CSS rule for `.hidden` to `app/assets/stylesheets/application.css` and it will be globally available in our application.
 
 ```css
 /* app/assets/stylesheets/application.css */
@@ -230,7 +265,7 @@ Now that this is working, let's refactor our code a bit for better organization.
 }
 ```
 
-and remove the `<style>` tag from your `app/views/pages/home.html.erb` view.
+When we remove the `<style>` tag from your `app/views/pages/home.html.erb` view it should look like this.
 
 ```html
 <!-- app/views/pages/home.html.erb -->
@@ -251,9 +286,9 @@ and remove the `<style>` tag from your `app/views/pages/home.html.erb` view.
 ```
 
 ### Example 2: The Asset Pipeline with Import Maps
-Now let's take advantage of the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) to include a simple JavaScript framework called [Stimulus.js](https://stimulus.hotwired.dev/). Stimulus.js enhances HTML by connecting elements to JavaScript objects via data attributes. JavaScript functionalities are encapsulated in controllers and targets, making the code more organized and maintainable.
+Now let's take advantage of the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) to refactor our JavaScript using ES6 style imports.
 
-Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7). This will allow us to fetch stimulus at runtime using ES6 import statements.
+Ensure the `importmap-rails` gem is in your `Gemfile` (it's included/installed by default in Rails 7).
 
 ```ruby
 # Gemfile
@@ -277,18 +312,14 @@ pin "application", preload: true
 
 Ensure your layout file includes the `javascript_importmap_tags` in the `<head>`. It should look something like this.
 
-```html
+```erb
 <!-- app/views/layouts/application.html.erb -->
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Rails Template</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    ...
     <%= javascript_importmap_tags %>
+    ...
   </head>
 
   <body>
@@ -299,7 +330,7 @@ Ensure your layout file includes the `javascript_importmap_tags` in the `<head>`
 
 Now if you visit the root route of your application it will import your `application.js` in the head using a`<script type="importmap">` tag in the rendered html.
 
-```html
+```erb
 <!DOCTYPE html>
 <html>
   <head>
@@ -319,6 +350,10 @@ Now if you visit the root route of your application it will import your `applica
   </body>
 </html>
 ```
+
+<aside>
+`es-module-shims.min.js` is a JavaScript library that provides shim (or polyfill) support for ES6 modules in browsers that do not fully support ES6 module syntax natively.
+</aside>
 
 This will allow us to use ES6 style imports in our application. Let's refactor that `toggleTextVisibility` function we wrote into it's own file and import it in the `app/javascript/application.js` file. Create a file for the function.
 
@@ -352,7 +387,8 @@ Now we can remove the `<script>` tag from our view.
 ```
 
 ### Example 3: Stimulus.js
-Instead of directly attaching event handlers in your HTML (like `onclick` attributes) or globally exposing functions (like how we attached the function to the window during the `DOMContentLoaded` event), Stimulus allows you to declare how HTML elements should interact with JavaScript more declaratively via html attributes and controller objects. Let's refactor our toggle visibility functionality using [Stimulus.js](https://stimulus.hotwired.dev/).
+Instead of directly attaching event handlers in your HTML (like `onclick` attributes) or globally exposing functions (like how we attached the function to the window during the `DOMContentLoaded` event), [Stimulus.js](https://stimulus.hotwired.dev/) enhances HTML by connecting elements to JavaScript objects via data attributes, making the code more organized and maintainable. Let's refactor our toggle visibility functionality using [Stimulus.js](https://stimulus.hotwired.dev/).
+
 #### Step 1: Setting Up Stimulus
 
 Run the command to install Stimulus.
