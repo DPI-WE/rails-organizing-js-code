@@ -625,21 +625,39 @@ import * as React from "react";
 import * as ReactDOM from "react-dom/client";
 import ToggleVisibility from "./components/ToggleVisibility";
 
+const App = () => {
+  return <ToggleVisibility />
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  const root = ReactDOM.createRoot(document.getElementById('home'));
-  root.render(<ToggleVisibility />)
+  const root = ReactDOM.createRoot(document.getElementById('app'));
+  root.render(<App />)
 });
 ```
 
-We'll also need to update our `home` view file to add an id for the React app to attach to.
+We'll also need to update our `application.html.erb` layout file to add a `<div>` for the React app to attach to.
 
-```html
-<!-- app/views/pages/home.html.erb -->
+```erb
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rails Template</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
 
-<div id="home" />
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body>
+    <div id="app" />
+  </body>
+</html>
+
 ```
 
-Start your Rails server in a terminal `bin/rails server` and your yarn build in another terminal `yarn build --watch`. Visit the home page and your React component should appear. It should work exactly as before, but now with `React` and `esbuild`.
+Start your Rails server in a terminal `bin/rails server` and your javascript build in another terminal `yarn build --watch`. Visit the home page and your React component should appear. It should work exactly as before, but now with `React` and `esbuild`.
 
 ![](assets/vanilla-js-example-2.gif)
 
