@@ -569,21 +569,20 @@ import 'components/HelloReact'
 Start your Rails server and visit the page where the React component should appear.
 
 ### Example 5: API-only approach
-<!-- TODO -->
+Another common approach you will encounter is a totally decoupled backend and frontend. In an API-only application, Rails is used primarily as a backend service that provides a API (usually JSON). This API is consumed by a frontend application (like a React app). The React application handles the user interface and interacts with the API over HTTP.
+This separation allows for more flexibility in development and deployment, and it can lead to better performance and scalability. However, it also involves more complexity in terms of setup, development, and maintenance, as you are essentially managing two separate applications.
 
 ### Choosing the Right Approach
-<!-- Traditional approach for vanilla js -->
-- Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) if your project aligns with the Rails asset management approach, particularly for less complex JavaScript integrations.
+- Choose the "Vanilla" JavaScript approach if your application only requires a few "sprinkles" of JavaScript here and there.
+- Choose the [Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html) with [Import Maps](https://github.com/rails/importmap-rails) for less complex JavaScript integrations.
 - Choose Alternative Bundling libraries like [jsbundling-rails](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like [React](https://react.dev/) or [Vue](https://vuejs.org/) or extensive JavaScript tooling like [NPM](https://www.npmjs.com/).
-<!-- Choose API-only approach if... -->
-
-<!-- TODO: add a gif/image of the app -->
+- Choose an API-only Rails backend with an SPA frontend if your project requires a high level of interactivity, has distinct frontend and backend development teams, or needs the flexibility to adapt to changing frontend technologies. 
 
 ## Resources
 
 - [The Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)
 - [Working with JavaScript in Rails](https://guides.rubyonrails.org/working_with_javascript_in_rails.html)
-- [Stimulus](https://stimulus.hotwired.dev/)
+- [Stimulus.js](https://stimulus.hotwired.dev/)
 
 ## Conclusion
-In this lesson, you've learned 4 different ways to add JavaScript to your Rails application. Understanding these different approaches allows you to choose the right tool for your project's needs.
+In this lesson, you've learned 5 different ways to add JavaScript to your Rails application. Understanding these different architectures allows you to choose the right approach given your project's requirements.
