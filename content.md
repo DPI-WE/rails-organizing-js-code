@@ -564,7 +564,7 @@ Which will render in our html like this.
 
 Now that we've removed Import Maps and added esbuild, we'll use [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) for bundling our javascript. You can manage your javascript dependencies in `package.json` (which is similar to a Gemfile for JavaScript packages). We'll use the "build" command to bundle our `application.js` file. 
 
-```json
+```javascript
 // package.json
 {
   "name": "app",
