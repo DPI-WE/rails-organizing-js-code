@@ -406,76 +406,102 @@ $ bundle install
 $ rails stimulus:install
 ```
 
-<!--
+This will add some boilerplate code for using Stimulus controllers in your application. Importantly, it will `pin` Stimulus JavaScript code to your importmap.
 
-#### Step 2: Creating a Stimulus Controller
-Generate a Stimulus controller:
-
-```bash
-./bin/rails generate stimulus toggle_hidden
+```ruby
+# config/importmap.rb
+pin "@hotwired/stimulus", to: "stimulus.min.js", preload: true
+pin "@hotwired/stimulus-loading", to: "stimulus-loading.js", preload: true
+pin_all_from "app/javascript/controllers", under: "controllers"
 ```
 
-Edit the controller:
+If you inspect your `<head>` you'll now be importing Stimulus library (and controllers) in your application.
+
+```html
+<script type="importmap" data-turbo-track="reload">{
+  "imports": {
+    "application": "/assets/application-f9bcf6a93fe3cb044701030ec651bacc701aa3cc37bd995c3f9d0f5f862785a8.js",
+    "@hotwired/stimulus": "/assets/stimulus.min-d03cf1dff41d6c5698ec2c5d6a501615a7a33754dbeef8d1edd31c928d17c652.js",
+    "@hotwired/stimulus-loading": "/assets/stimulus-loading-1fc59770fb1654500044afd3f5f6d7d00800e5be36746d55b94a2963a7a228aa.js",
+    "controllers/application": "/assets/controllers/application-368d98631bccbf2349e0d4f8269afb3fe9625118341966de054759d96ea86c7e.js",
+    "controllers/hello_controller": "/assets/controllers/hello_controller-549135e8e7c683a538c3d6d517339ba470fcfb79d62f738a0a089ba41851a554.js",
+    "controllers": "/assets/controllers/index-2db729dddcc5b979110e98de4b6720f83f91a123172e87281d5a58410fc43806.js"
+  }
+}
+</script>
+```
+
+Let's create a new Stimulus controller for our toggle hidden functionality. We can call this controller `toggle_hidden`.
+
+```bash
+$ rails generate stimulus toggle_hidden
+```
+
+This command will create a Stimulus controller.
 
 ```javascript
 // app/javascript/controllers/toggle_hidden_controller.js
 
-import { Controller } from "stimulus";
+import { Controller } from "@hotwired/stimulus"
 
+// Connects to data-controller="toggle-hidden"
 export default class extends Controller {
+  connect() {
+  }
+}
+```
+
+Let's edit this controller to include our `toggle` functionality and adjust our view to connect this controller using `data-attributes`.
+
+```javascript
+// app/javascript/controllers/toggle_hidden_controller.js
+
+// imports the Controller class from the Stimulus library.
+import { Controller } from "@hotwired/stimulus"
+
+// creates a new Stimulus controller class extending the base Controller class from Stimulus
+export default class extends Controller {
+  // declare a target named "text". This lets us refer to DOM elements marked with data-toggle-hidden-target="text".
   static targets = ["text"]
 
+  // gets called when a data-action occurs
   toggle() {
+    // accessing the "text" target and toggling its hidden class.
     this.textTarget.classList.toggle('hidden');
   }
 }
 ```
 
-#### Step 3: Adjusting the View
-Update the HTML to use Stimulus:
-
-`app/views/pages/home.html.erb`
 ```erb
+<!-- app/views/pages/home.html.erb -->
 
+<!-- connects this div (and its contents) to the app/javascript/controllers/toggle_hidden_controller.js Stimulus controller. -->
 <div data-controller="toggle-hidden">
+
+  <!-- connects this p to the 'text' target defined in the JavaScript controller -->
   <p data-toggle-hidden-target="text" class="hidden">
     This is hidden text.
   </p>
 
-  <button data-action="click->toggle#toggle">Toggle Visibility</button>
+  <!-- clicking this button will execute the toggle method in the toggle_hidden.js controller -->
+  <button data-action="click->toggle-hidden#toggle">Toggle Visibility</button>
 </div>
+
 ```
 
-
-
-2. Configure
-Define your dependencies in `config/importmap.rb`. For example, to add a library like lodash use the importmap CLI tool:
-
-```bash
-$ bin/importmap pin lodash
-```
-Which will add lodash to `config/importmap.rb`:
-
-```ruby
-# config/importmap.rb
-pin "lodash", to: "https://cdn.skypack.dev/lodash"
-```
-
-3. Using the Dependency
-In your JavaScript files (e.g., `app/javascript/application.js`), you can now import the module:
+We can now remove the "Vanilla" JavaScript code we wrote and safely delete the `app/javascript/custom` directory and the `toggle_visibility.js` file we wrote earlier. Our `application.js` file should now look like this, simply importing our Stimulus controllers.
 
 ```javascript
-import _ from 'lodash';
+// app/javascript/application.js
 
-console.log(_.shuffle([1, 2, 3, 4]));
+import "controllers"
 ```
 
-4. Execute
+<!-- TODO: talk about importmap `pinning` more? -->
 
-Run your Rails server and the JavaScript code using lodash will work as expected.
+Run your Rails server and the toggle visibility button should work exactly as before.
 
--->
-
+<!-- TODO: verify this works as expected -->
 ### Example 4: Alternative Bundling with jsbundling-rails, webpack, and React
 For more complex JavaScript setups like integrating [React](https://react.dev/), Rails 7 offers tools like `jsbundling-rails`.
 
