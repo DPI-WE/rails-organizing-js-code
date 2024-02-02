@@ -1,3 +1,3 @@
 # Organizing JavaScript Code
 
-https://learn.firstdraft.com/lessons/293-rails-stimulus-js
+https://learn.firstdraft.com/lessons/295-rails-organizing-js-code
