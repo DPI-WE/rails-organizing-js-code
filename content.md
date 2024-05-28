@@ -676,8 +676,8 @@ This separation allows for more flexibility in development and deployment, and i
 ## Quiz
 
 - How was JavaScript initially embedded in Rails applications?
-- Using `<script>` tags directly within HTML.
-  - Correct! Early Rails applications embedded JavaScript directly in HTML using `<script>` tags.
+- Using `script` tags directly within HTML.
+  - Correct! Early Rails applications embedded JavaScript directly in HTML using `script` tags.
 - Through the Asset Pipeline.
   - Not quite. The Asset Pipeline was introduced later to manage JavaScript assets.
 - By using Webpacker.
