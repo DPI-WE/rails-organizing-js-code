@@ -673,6 +673,71 @@ This separation allows for more flexibility in development and deployment, and i
 - Choose Alternative Bundling libraries like [jsbundling-rails](https://github.com/rails/jsbundling-rails) if your project requires integration with Single Page Application (SPA) frameworks like [React](https://react.dev/) or [Vue](https://vuejs.org/) or extensive JavaScript tooling like [NPM](https://www.npmjs.com/).
 - Choose an API-only Rails backend with an SPA frontend if your project requires a high level of interactivity, has distinct frontend and backend development teams, or needs the flexibility to adapt to changing frontend technologies. 
 
+## Quiz
+
+- How was JavaScript initially embedded in Rails applications?
+- Using `<script>` tags directly within HTML.
+  - Correct! Early Rails applications embedded JavaScript directly in HTML using `<script>` tags.
+- Through the Asset Pipeline.
+  - Not quite. The Asset Pipeline was introduced later to manage JavaScript assets.
+- By using Webpacker.
+  - Not quite. Webpacker is a more recent tool for managing JavaScript in Rails.
+{: .choose_best #inline_javascript title="Early JavaScript Embedding in Rails" points="1" answer="1" }
+
+- What does the Asset Pipeline provide for JavaScript management?
+- Real-time data streaming.
+  - Not quite. Real-time data streaming is handled by tools like ActionCable.
+- Bundling, concatenation, and minification.
+  - Correct! The Asset Pipeline helps in bundling, concatenation, and minification of JavaScript files.
+- Server-side rendering.
+  - Not quite. Server-side rendering is typically managed by frameworks like React or Vue with server-side support.
+{: .choose_best #asset_pipeline_features title="Features of the Asset Pipeline" points="1" answer="2" }
+
+- How does Stimulus.js connect HTML elements to JavaScript objects?
+- Through data attributes.
+  - Correct! Stimulus.js uses data attributes to connect HTML elements to JavaScript controllers.
+- By using inline JavaScript.
+  - Not quite. Inline JavaScript is not the preferred method with Stimulus.js.
+- Via the Asset Pipeline.
+  - Not quite. The Asset Pipeline manages asset compilation but does not connect HTML elements to JavaScript objects.
+{: .choose_best #stimulus_js title="Connecting HTML Elements in Stimulus.js" points="1" answer="1" }
+
+- What problem does Import Maps solve in Rails 7?
+- Handles real-time communication.
+  - Not quite. Real-time communication is handled by tools like ActionCable.
+- Manages CSS stylesheets.
+  - Not quite. Import Maps specifically address JavaScript dependencies.
+- Simplifies the inclusion of JavaScript dependencies.
+  - Correct! Import Maps simplifies the inclusion of JavaScript dependencies by leveraging modern browser capabilities.
+{: .choose_best #import_maps title="Functionality of Import Maps" points="1" answer="3" }
+
+- What is the purpose of ES6 modules in JavaScript?
+- To allow breaking JavaScript into smaller, reusable components.
+  - Correct! ES6 modules enable modular and reusable code in JavaScript.
+- To enhance CSS styling.
+  - Not quite. ES6 modules are specifically for JavaScript.
+- To manage database migrations.
+  - Not quite. ES6 modules are unrelated to database migrations.
+{: .choose_best #es6_modules title="Purpose of ES6 Modules" points="1" answer="1" }
+
+- Which tool can be used for JavaScript bundling in Rails applications integrating React or Vue?
+- Webpacker
+  - Partially correct. While Webpacker was used in the past, jsbundling-rails is more recent and flexible.
+- Turbo
+  - Not quite. Turbo is used for enhancing the speed of web applications but not specifically for bundling JavaScript.
+- jsbundling-rails
+  - Correct! jsbundling-rails can be used for integrating modern JavaScript frameworks like React or Vue.
+{: .choose_best #js_bundling title="JavaScript Bundling Tool for React or Vue" points="1" answer="3" }
+
+- When should you choose an API-only Rails backend with an SPA frontend?
+- When the project requires a high level of interactivity and has distinct frontend and backend development teams.
+  - Correct! An API-only backend with an SPA frontend is suitable for highly interactive projects with distinct development teams.
+- When only a few JavaScript sprinkles are needed.
+  - Not quite. This scenario is better suited for Vanilla JavaScript.
+- For small and simple web applications.
+  - Not quite. API-only backends are generally more complex and suited for larger applications.
+{: .choose_best #api_only title="Choosing API-only Backend with SPA Frontend" points="1" answer="1" }
+
 ## Resources
 - [The Asset Pipeline](https://guides.rubyonrails.org/asset_pipeline.html)
 - [Working with JavaScript in Rails](https://guides.rubyonrails.org/working_with_javascript_in_rails.html)
